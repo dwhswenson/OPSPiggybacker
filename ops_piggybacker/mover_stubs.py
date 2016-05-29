@@ -35,6 +35,14 @@ class ShootingStub(paths.pathmover.PathMover):
         ensemble = input_sample.ensemble
 
         # determine the direction
+        shared = trial_trajectory.shared_subtrajectory(initial_trajectory)
+        if shared[0] == trial_trajectory[0]:
+            choice = 0  # forward submover
+        elif shared[-1] == trial_trajectory[-1]:
+            choice = 1  # backward submover
+        else:
+            raise RuntimeError("Are you sure this is 1-way shooting?")
+
 
         trial_details = paths.SampleDetails(
             initial_trajectory=initial_trajectory,
@@ -47,21 +55,34 @@ class ShootingStub(paths.pathmover.PathMover):
             ensemble=ensemble,
             parent=input_sample,
             details=trial_details,
-            mover=self.mimic
+            mover=self.mimic.movers[choice]
         )
 
         trials = [trial]
         move_details = paths.MoveDetails()
 
         if accepted:
-            return paths.AcceptedSamplePathMoveChange(
+            inner = paths.AcceptedSamplePathMoveChange(
                 samples=trials,
-                mover=self.mimic,
+                mover=self.mimic.movers[choice],
                 details=move_details
             )
         else:
-            return paths.RejectedSamplePathMoveChange(
+            inner = paths.RejectedSamplePathMoveChange(
                 samples=trial,
-                mover=self.mimic,
+                mover=self.mimic.movers[choice],
                 details=move_details
             )
+
+        rc_details = paths.MoveDetails()
+        rc_details.inputs = []
+        rc_details.choice = choice
+        rc_details.chosen_mover = self.mimic.movers[choice]
+        rc_details.probability = 0.5
+        rc_details.weights = [1, 1]
+
+        return paths.RandomChoicePathMoveChange(
+            subchange=inner,
+            mover=self.mimic,
+            details=rc_details
+        )
