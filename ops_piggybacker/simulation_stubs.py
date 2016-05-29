@@ -8,8 +8,10 @@ class ShootingPseudoSimulator(paths.PathSimulator):
         self.scheme.choice_probability = {mover.mimic: 1.0}
         self.mover = mover
         self.globalstate = initial_conditions
+        self.initial_conditions = initial_conditions
+        self.network = network
         self.root_mover = self.scheme.move_decision_tree()
-        self.path_sim_mover = paths.PathSimulatorMover(self.root_mover, self)
+        self._path_sim_mover = paths.PathSimulatorMover(mover.mimic, self)
 
 
     def run(self, step_info_list):
@@ -24,6 +26,7 @@ class ShootingPseudoSimulator(paths.PathSimulator):
         if self.step == 0:
             if self.storage is not None:
                 self.storage.save(self.scheme)
+            self.save_initial()
 
         for step_info in step_info_list:
             self.step += 1
@@ -41,7 +44,7 @@ class ShootingPseudoSimulator(paths.PathSimulator):
 
             change = paths.PathSimulatorPathMoveChange(
                 subchange=subchange,
-                mover=self.path_sim_mover,
+                mover=self._path_sim_mover,
                 details=paths.MoveDetails(step=self.step)
             )
             samples = change.results
