@@ -3,7 +3,7 @@ omit =
     */python?.?/*
     */site-packages/nose/*
     */openpathsampling/*
-    */ops_piggybacke/tests/*
+    */ops_piggybacker/tests/*
 exclude_lines = 
     pragma: no cover
     pragma: no-cover
