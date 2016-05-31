@@ -22,9 +22,15 @@ script:
     - python -c "import openpathsampling; print 'OPS version' + openpathsampling.version.full_version"
     - nosetests -v --with-coverage
 
-#after_success:
-    #- coveralls
+after_success:
+    - coveralls
 
 env:
     matrix:
         - python=2.7 CONDA_PY=27 CONDA_NPY=110
+# only run travis on master: either as PR (where the PR tests the merge with
+# master) or as a push (where the push is directly to master, as happens
+# when a PR is officially merged into master and pushed to GH)
+branches:
+    only:  
+        master
