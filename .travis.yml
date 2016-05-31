@@ -1,0 +1,30 @@
+language: python
+
+python:
+    - "2.7"
+
+install:
+    - deactivate
+    - source devtools/ci/install_conda.sh
+    - export PYTHONUNBUFFERED=true
+
+script:
+    - conda install --yes conda-build
+    - conda config --set always_yes true
+    # the next two are if the OPS conda build isn't working
+    - source devtools/no-ops-conda/make_build.sh
+    - source devtools/no-ops-conda/build.sh
+    # the next three are preferred if the OPS conda build is working
+    #- conda build devtools/conda-recipe
+    #- source activate _test
+    #- conda clean -pltis --yes
+
+    - python -c "import openpathsampling; print 'OPS version' + openpathsampling.version.full_version"
+    - nosetests -v --with-coverage
+
+#after_success:
+    #- coveralls
+
+env:
+    matrix:
+        - python=2.7 CONDA_PY=27 CONDA_NPY=110

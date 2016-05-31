@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/dwhswenson/OPSPiggybacker.svg?branch=master)](https://travis-ci.org/dwhswenson/OPSPiggybacker)
+
 # OPSPiggybackers
 
 The goal of this little toy project is to create an OPS mover that creates
