@@ -40,7 +40,7 @@ class ShootingStub(paths.pathmover.PathMover):
             choice = 0  # forward submover
         elif shared[-1] == trial_trajectory[-1]:
             choice = 1  # backward submover
-        else:
+        else:  # pragma: no cover
             raise RuntimeError("Are you sure this is 1-way shooting?")
 
 
