@@ -1,0 +1,28 @@
+package:
+    name: ops_piggybacker-dev
+    version: "0.1.0"
+
+source:
+    path: ../../
+
+requirements:
+    build:
+        - python
+        - setuptools
+        - numpy
+
+    run:
+        - python
+        - numpy
+        - scipy
+        - pandas
+        - openpathsampling-dev
+
+
+test:
+    requires:
+        - nose
+        - python-coveralls
+
+    imports:
+        - ops_piggybacker
