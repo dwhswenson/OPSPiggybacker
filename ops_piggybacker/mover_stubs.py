@@ -43,7 +43,6 @@ class ShootingStub(paths.pathmover.PathMover):
         else:  # pragma: no cover
             raise RuntimeError("Are you sure this is 1-way shooting?")
 
-
         trial_details = paths.SampleDetails(
             initial_trajectory=initial_trajectory,
             shooting_snapshot=shooting_point

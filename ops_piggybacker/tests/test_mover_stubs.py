@@ -20,12 +20,22 @@ class testShootingStub(object):
         move = common.tps_shooting_moves[0]
         replica = move[0]
         trial_trajectory = move[1]
-        shooting_point = move[2]
+        shooting_point = initial_sample.trajectory[move[2]]
         accepted = move[3]
-        self.stub.move(initial_sample, trial_trajectory, shooting_point,
-                       accepted)
-        # TODO: check the return value in detail
-        raise SkipTest
+        change = self.stub.move(initial_sample, trial_trajectory,
+                                shooting_point, accepted)
+        # assertions about the shape of the decision history
+        assert_equal(change.mover, self.stub.mimic)
+        assert_equal(change.subchange, change.canonical)
+        assert_equal(change.subchange.subchange, None)
+        assert_equal(len(change.trials), 1)
+        # assertions true for any OneWayShooting
+        details0 = change.canonical.trials[0].details
+        assert_equal(details0.shooting_snapshot, shooting_point)
+        assert_equal(details0.initial_trajectory.index(shooting_point), move[2])
+        # assertions specific to this test
+        assert_equal(change.accepted, True)
+        assert_equal(type(change.canonical.mover), paths.BackwardShootMover)
 
     def test_forward_move(self):
         init_traj = common.tps_shooting_moves[0][1]
@@ -35,24 +45,41 @@ class testShootingStub(object):
         move = common.tps_shooting_moves[1]
         replica = move[0]
         trial_trajectory = move[1]
-        shooting_point = move[2]
+        shooting_point = initial_sample.trajectory[move[2]]
         accepted = move[3]
-        self.stub.move(initial_sample, trial_trajectory, shooting_point,
-                       accepted)
-        # TODO: check the return value in detail
-        raise SkipTest
+        change = self.stub.move(initial_sample, trial_trajectory,
+                                shooting_point, accepted)
+        # assertions about the shape of the decision history
+        assert_equal(change.mover, self.stub.mimic)
+        assert_equal(change.subchange, change.canonical)
+        assert_equal(change.subchange.subchange, None)
+        assert_equal(len(change.trials), 1)
+        # assertions true for any OneWayShooting
+        details0 = change.canonical.trials[0].details
+        assert_equal(details0.shooting_snapshot, shooting_point)
+        assert_equal(details0.initial_trajectory.index(shooting_point), move[2])
+        # assertions specific to this test
+        assert_equal(change.accepted, True)
+        assert_equal(type(change.canonical.mover), paths.ForwardShootMover)
 
     def test_rejected_move(self):
-        init_traj = common.tps_shooting_moves[1][1]
-        initial_sample = paths.Sample(replica=0,
-                                      trajectory=init_traj,
-                                      ensemble=common.tps_ensemble)
-        move = common.tps_shooting_moves[2]
+        initial_sample = common.initial_tps_sample
+        move = common.tps_shooting_moves[0]
         replica = move[0]
         trial_trajectory = move[1]
-        shooting_point = move[2]
-        accepted = move[3]
-        self.stub.move(initial_sample, trial_trajectory, shooting_point,
-                       accepted)
-        # TODO: check the return value in detail
-        raise SkipTest
+        shooting_point = initial_sample.trajectory[move[2]]
+        accepted = False
+        change = self.stub.move(initial_sample, trial_trajectory,
+                                shooting_point, accepted)
+        # assertions about the shape of the decision history
+        assert_equal(change.mover, self.stub.mimic)
+        assert_equal(change.subchange, change.canonical)
+        assert_equal(change.subchange.subchange, None)
+        assert_equal(len(change.trials), 1)
+        # assertions true for any OneWayShooting
+        details0 = change.canonical.trials[0].details
+        assert_equal(details0.shooting_snapshot, shooting_point)
+        assert_equal(details0.initial_trajectory.index(shooting_point), move[2])
+        # assertions specific to this test
+        assert_equal(change.accepted, False)
+        assert_equal(type(change.canonical.mover), paths.BackwardShootMover)
