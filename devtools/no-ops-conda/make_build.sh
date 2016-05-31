@@ -12,6 +12,7 @@ curl ${OPS_CONDA_RECIPE}/meta.yaml |
     grep -v "openpathsampling" > ${MYDIR}/ops_reqs.txt
 
 cp ${MYDIR}/../conda-recipe/meta.yaml ${MYDIR}/meta.yaml
+export PYTHON=`which python`
 echo "#!/bin/bash
 conda install --file ${MYDIR}/ops_reqs.txt" > ${MYDIR}/build.sh
 echo 'export ORIG=`pwd`
