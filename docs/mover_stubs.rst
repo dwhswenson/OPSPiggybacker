@@ -5,7 +5,7 @@
 Mover Stubs
 ===========
 
-.. autosummary::
-   :toctree: api/generated/
-
-   ShootingStub
+.. autoclass:: ops_piggybacker.ShootingStub
+   :members:
+   :inherited-members:
+   :show-inheritance:

@@ -5,7 +5,7 @@
 Simulation Stubs
 ================
 
-.. autosummary::
-   :toctree: api/generated/
-
-   ShootingPseudoSimulator
+.. autoclass:: ops_piggybacker.ShootingPseudoSimulator
+   :members:
+   :inherited-members:
+   :show-inheritance:
