@@ -1,7 +1,6 @@
 
 import openpathsampling as paths
 from openpathsampling.tests.test_helpers import make_1d_traj
-from tools import test_data_dirname
 import os
 
 def xval(snap):
@@ -47,7 +46,14 @@ initial_tps_sample, tps_shooting_moves = shooting_move_info()
 template = initial_tps_sample.trajectory[0]
 
 if __name__ == "__main__":
-    tps_setup_filename = os.path.join(test_data_dirname(), "tps_setup.nc")
+    # can't seem to use pkg_resources.resource_filename here
+    my_directory = os.path.dirname(__file__)
+    tps_setup_filename = os.path.join(my_directory, "test_data",
+                                      "tps_setup.nc")
+    print "Putting TPS setup in:", tps_setup_filename
+    # note that this assumes that this is the installed package location
+    # (if this file is run from another copy, then there are two test_data/
+    # directories to worry about here!)
     tps_storage = paths.Storage(tps_setup_filename, "w", template)
     tps_storage.save(tps_network)
     tps_storage.sync()
