@@ -13,3 +13,9 @@ from pkg_resources import resource_filename
 def data_filename(fname, subdir='test_data'):
     return resource_filename('ops_piggybacker',
                              os.path.join('tests', subdir, fname))
+
+def test_data_dirname():
+    return os.path.dirname(
+        resource_filename('ops_piggybacker', 
+                          os.path.join('tests', 'test_data', 'README.md'))
+    )

@@ -1,7 +1,7 @@
 
 import openpathsampling as paths
 from openpathsampling.tests.test_helpers import make_1d_traj
-from tools import data_filename
+from tools import test_data_dirname
 import os
 
 def xval(snap):
@@ -47,8 +47,8 @@ initial_tps_sample, tps_shooting_moves = shooting_move_info()
 template = initial_tps_sample.trajectory[0]
 
 if __name__ == "__main__":
-    tps_storage = paths.Storage(data_filename("tps_setup.nc"), "w",
-                                template)
+    tps_setup_filename = os.path.join(test_data_dirname(), "tps_setup.nc")
+    tps_storage = paths.Storage(tps_setup_filename, "w", template)
     tps_storage.save(tps_network)
     tps_storage.sync()
     tps_storage.close()
