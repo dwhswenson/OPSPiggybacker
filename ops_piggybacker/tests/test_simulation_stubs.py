@@ -12,16 +12,25 @@ class testShootingPseudoSimulator(object):
         if os.path.isfile(data_filename(self.fname)):
             os.remove(data_filename(self.fname))
 
-        shoot = oink.ShootingStub(common.tps_ensemble)
-        template = make_1d_traj([0.0])[0]
+        setup_storage = paths.Storage(data_filename("tps_setup.nc"), "r")
+        network = setup_storage.networks[0]
+        tps_ensemble = network.sampling_ensembles[0]
+        initial_sample = paths.Sample(
+            replica=0, 
+            trajectory=common.initial_tps_sample.trajectory,
+            ensemble=tps_ensemble
+        )
+        template = initial_sample.trajectory[0]
+
+        shoot = oink.ShootingStub(tps_ensemble)
         self.storage = paths.Storage(data_filename(self.fname), "w",
                                      template)
 
         self.pseudosim = oink.ShootingPseudoSimulator(
-            storage=None, #self.storage,
-            initial_conditions=paths.SampleSet([common.initial_tps_sample]),
+            storage=self.storage,
+            initial_conditions=paths.SampleSet([initial_sample]),
             mover=shoot,
-            network=common.tps_network
+            network=network
         )
     
     def teardown(self):
@@ -31,5 +40,5 @@ class testShootingPseudoSimulator(object):
 
     def test_run_and_analyze(self):
         self.pseudosim.run(common.tps_shooting_moves)
-        # self.storage.close()
+        self.storage.close()
         raise SkipTest

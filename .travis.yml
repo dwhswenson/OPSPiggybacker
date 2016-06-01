@@ -20,6 +20,7 @@ script:
     #- conda clean -pltis --yes
 
     - python -c "import openpathsampling; print 'OPS version' + openpathsampling.version.full_version"
+    - python ops_piggybacker/tests/common_test_data.py
     - nosetests -v --with-coverage
 
 after_success:
