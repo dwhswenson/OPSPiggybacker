@@ -47,4 +47,3 @@ Planned:
 * `0.3`: Generalize mover input to handle arbitrary moves (not just
   shooting)
 
-I'm not necessarily planning to develop this past that point. 
