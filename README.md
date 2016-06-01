@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/dwhswenson/OPSPiggybacker.svg?branch=master)](https://travis-ci.org/dwhswenson/OPSPiggybacker)
+[![Coverage Status](https://coveralls.io/repos/github/dwhswenson/OPSPiggybacker/badge.svg?branch=master)](https://coveralls.io/github/dwhswenson/OPSPiggybacker?branch=master)
 
 # OPSPiggybackers
 
@@ -37,11 +38,13 @@ development, you should use the following installation procedure:
 
 ## Roadmap
 
-Current status: `0.0.0`
+Current status: `0.1.0-dev`
 
 Planned:
 
 * `0.1`: Support for shooting moves with only one ensemble (e.g., TPS)
 * `0.2`: Support for shooting moves with multiple ensembles (e.g., TIS)
+* `0.3`: Generalize mover input to handle arbitrary moves (not just
+  shooting)
 
 I'm not necessarily planning to develop this past that point. 
