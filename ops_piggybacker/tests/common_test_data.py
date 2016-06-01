@@ -1,11 +1,14 @@
 
 import openpathsampling as paths
-
 from openpathsampling.tests.test_helpers import make_1d_traj
+import os
 
-cv = paths.CV_Function("x", lambda snap: snap.xyz[0][0])
-left = paths.CVRangeVolume(cv, float("-inf"), 0.0)
-right = paths.CVRangeVolume(cv, 10.0, float("inf"))
+def xval(snap):
+    return snap.coordinates[0][0]
+
+cv = paths.CV_Function("x", xval)
+left = paths.CVRangeVolume(cv, float("-inf"), 0.0).named("left")
+right = paths.CVRangeVolume(cv, 10.0, float("inf")).named("right")
 
 tps_network = paths.TPSNetwork(left, right)
 tps_ensemble = tps_network.sampling_ensembles[0]
@@ -40,3 +43,4 @@ def shooting_move_info():
 
 initial_tps_sample, tps_shooting_moves = shooting_move_info()
 
+template = initial_tps_sample.trajectory[0]

@@ -1,2 +1,2 @@
-import common_test_data
+import openpathsampling
 import tools

@@ -6,3 +6,10 @@ from nose.plugins.skip import Skip, SkipTest
 
 from numpy.testing import assert_array_almost_equal
 import numpy as np
+
+import os
+from pkg_resources import resource_filename
+
+def data_filename(fname, subdir='test_data'):
+    return resource_filename('ops_piggybacker',
+                             os.path.join('tests', subdir, fname))
