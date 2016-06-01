@@ -1,5 +1,7 @@
 [![Build Status](https://travis-ci.org/dwhswenson/OPSPiggybacker.svg?branch=master)](https://travis-ci.org/dwhswenson/OPSPiggybacker)
 [![Coverage Status](https://coveralls.io/repos/github/dwhswenson/OPSPiggybacker/badge.svg?branch=master)](https://coveralls.io/github/dwhswenson/OPSPiggybacker?branch=master)
+[![Documentation Status](https://readthedocs.org/projects/opspiggybacker/badge/?version=latest)](http://opspiggybacker.readthedocs.io/en/latest/?badge=latest)
+
 
 # OPSPiggybackers
 
