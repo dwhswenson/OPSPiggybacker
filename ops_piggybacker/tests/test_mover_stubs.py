@@ -15,6 +15,9 @@ class testShootingStub(object):
         # this instantiates an object, and ensures that instantiation works
         self.stub = oink.ShootingStub(common.tps_ensemble)
 
+    def test_join_one_way(self):
+        raise SkipTest
+
     def test_backward_move(self):
         initial_sample = common.initial_tps_sample
         move = common.tps_shooting_moves[0]
@@ -36,6 +39,9 @@ class testShootingStub(object):
         # assertions specific to this test
         assert_equal(change.accepted, True)
         assert_equal(type(change.canonical.mover), paths.BackwardShootMover)
+
+    def test_backward_move_not_pre_joined(self):
+        raise SkipTest
 
     def test_forward_move(self):
         init_traj = common.tps_shooting_moves[0][1]
@@ -62,6 +68,9 @@ class testShootingStub(object):
         assert_equal(change.accepted, True)
         assert_equal(type(change.canonical.mover), paths.ForwardShootMover)
 
+    def test_forward_move_not_pre_joined(self):
+        raise SkipTest
+
     def test_rejected_move(self):
         initial_sample = common.initial_tps_sample
         move = common.tps_shooting_moves[0]
@@ -83,3 +92,6 @@ class testShootingStub(object):
         # assertions specific to this test
         assert_equal(change.accepted, False)
         assert_equal(type(change.canonical.mover), paths.BackwardShootMover)
+
+    def test_rejected_move_not_pre_joined(self):
+        raise SkipTest
