@@ -46,7 +46,7 @@ class ShootingStub(paths.pathmover.PathMover):
         elif direction < 0:
             joined_trajectory = (partial_trial +
                                  input_trajectory[shooting_idx:])
-        else:
+        else: # pragma: no cover
             raise RuntimeError("Bad direction for shooting: " +
                                str(direction))
         return joined_trajectory
@@ -76,11 +76,10 @@ class ShootingStub(paths.pathmover.PathMover):
         ensemble = input_sample.ensemble
 
         if not self.pre_joined:
-            initial_trajectory = self.join_one_way(input_trajectory,
-                                                   trial_trajectory,
-                                                   shooting_point,
-                                                   direction)
-            
+            trial_trajectory = self.join_one_way(initial_trajectory,
+                                                 trial_trajectory,
+                                                 shooting_point,
+                                                 direction)
 
         # determine the direction
         shared = trial_trajectory.shared_subtrajectory(initial_trajectory)
