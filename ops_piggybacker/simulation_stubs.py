@@ -32,7 +32,7 @@ class ShootingPseudoSimulator(paths.PathSimulator):
 
         for step_info in step_info_list:
             self.step += 1
-            if len(step_info) == 4 and not self.mover.pre_joined:
+            if len(step_info) == 4 and not self.mover.pre_joined: # pragma: no-cover
                 raise RuntimeError(
                     "Shooting trial trajectories not pre-joined: " + 
                     "step_info must be (replica, trial_segment, " + 
@@ -48,7 +48,6 @@ class ShootingPseudoSimulator(paths.PathSimulator):
 
             input_sample = self.globalstate[replica]
             shooting_point = input_sample.trajectory[shooting_point_index]
-
 
 
             subchange = self.mover.move(input_sample, trial_trajectory,

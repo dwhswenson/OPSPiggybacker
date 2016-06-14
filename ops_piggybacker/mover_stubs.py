@@ -104,7 +104,8 @@ class ShootingStub(paths.pathmover.PathMover):
                                                  shooting_point,
                                                  direction)
 
-        # determine the direction
+        # determine the direction based on trial trajectory (maybe check
+        # with given direction if given?)
         shared = trial_trajectory.shared_subtrajectory(initial_trajectory)
         if shared[0] == trial_trajectory[0]:
             choice = 0  # forward submover

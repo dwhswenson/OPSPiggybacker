@@ -42,10 +42,10 @@ class testShootingStub(object):
         joined_3 = self.no_prejoin.join_one_way(joined_2, trial_3, sp_3, dir_3)
         assert_equal(joined_3, out_3)
 
-        out_4 = moves[2][1]
-        sp_4 = joined_2[moves[2][2]]
-        trial_4 = moves[2][4]
-        dir_4 = moves[2][5]
+        out_4 = moves[3][1]
+        sp_4 = joined_2[moves[3][2]]
+        trial_4 = moves[3][4]
+        dir_4 = moves[3][5]
         joined_4 = self.no_prejoin.join_one_way(joined_2, trial_4, sp_4, dir_4)
         assert_equal(joined_4, out_4)
 
