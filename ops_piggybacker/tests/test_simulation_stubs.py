@@ -37,9 +37,12 @@ class testShootingPseudoSimulator(object):
         if os.path.isfile(data_filename(self.fname)):
             os.remove(data_filename(self.fname))
 
+    def test_noprejoin_run_and_analyze(self):
+        raise SkipTest
 
     def test_run_and_analyze(self):
-        self.pseudosim.run(common.tps_shooting_moves)
+        moves = [tuple(move[0:4]) for move in common.tps_shooting_moves]
+        self.pseudosim.run(moves)
         self.storage.close()
         # open the file for analysis, check that its content is reasonable
         analysis = paths.AnalysisStorage(data_filename(self.fname))

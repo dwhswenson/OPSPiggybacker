@@ -4,6 +4,29 @@ class NoEngine(paths.engines.DynamicsEngine):
     pass
 
 class ShootingStub(paths.pathmover.PathMover):
+    """Stub to mimic a shooting move.
+    
+    Parameters
+    ----------
+    ensemble : paths.Ensemble
+        the ensemble for the shooting mover
+    selector : paths.ShootingPointSelector or None
+        the selector for the shooting point. Default None creates a
+        UniformSelector. Currently, only UniformSelector is supported.
+    engine : paths.engines.DynamicsEngine
+        the engine to report as the source of the dynamics
+    pre_joined : bool
+        whether the input trial trajectories are pre-joined into complete
+        trajectories, or take partial one-way segments which should by
+        dynamically joined. Currently defaults to pre_joined=True (likely to
+        change soon, though)
+
+    Attributes
+    ----------
+    mimic : paths.OneWayShootingMover
+        the mover that this stub mimics
+
+    """
     def __init__(self, ensemble, selector=None, engine=None, pre_joined=True):
         super(ShootingStub, self).__init__()
         if engine is None:
