@@ -13,3 +13,8 @@ from pkg_resources import resource_filename
 def data_filename(fname, subdir='test_data'):
     return resource_filename('ops_piggybacker',
                              os.path.join('tests', subdir, fname))
+
+import logging
+logging.getLogger('openpathsampling.netcdfplus').setLevel(logging.CRITICAL)
+logging.getLogger('openpathsampling.ensemble').setLevel(logging.CRITICAL)
+logging.getLogger('openpathsampling.initialization').setLevel(logging.CRITICAL)

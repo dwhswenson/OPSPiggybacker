@@ -4,7 +4,30 @@ class NoEngine(paths.engines.DynamicsEngine):
     pass
 
 class ShootingStub(paths.pathmover.PathMover):
-    def __init__(self, ensemble, selector=None, engine=None):
+    """Stub to mimic a shooting move.
+    
+    Parameters
+    ----------
+    ensemble : paths.Ensemble
+        the ensemble for the shooting mover
+    selector : paths.ShootingPointSelector or None
+        the selector for the shooting point. Default None creates a
+        UniformSelector. Currently, only UniformSelector is supported.
+    engine : paths.engines.DynamicsEngine
+        the engine to report as the source of the dynamics
+    pre_joined : bool
+        whether the input trial trajectories are pre-joined into complete
+        trajectories, or take partial one-way segments which should by
+        dynamically joined. Currently defaults to pre_joined=True (likely to
+        change soon, though)
+
+    Attributes
+    ----------
+    mimic : paths.OneWayShootingMover
+        the mover that this stub mimics
+
+    """
+    def __init__(self, ensemble, selector=None, engine=None, pre_joined=True):
         super(ShootingStub, self).__init__()
         if engine is None:
             engine = NoEngine()
@@ -13,10 +36,47 @@ class ShootingStub(paths.pathmover.PathMover):
         self.engine = engine
         self.selector = selector
         self.ensemble = ensemble
+        self.pre_joined = pre_joined
         self.mimic = paths.OneWayShootingMover(ensemble, selector, engine)
 
+    def join_one_way(self, input_trajectory, partial_trial,
+                     shooting_point, direction):
+        """Create a one-way trial trajectory
 
-    def move(self, input_sample, trial_trajectory, shooting_point, accepted):
+        Parameters
+        ----------
+        input_trajectory : paths.Trajectory
+            the previous complete trajectory
+        partial_trial : paths.Trajectory
+            The partial (one-way) trial trajectory. Must *not* include the
+            shooting point.
+        shooting_point : paths.Snapshot
+            the snapshot for the shooting point -- must be a member of the
+            input trajectory
+        direction : +1 or -1
+            if positive, treat as forward shooting; if negative, treat as
+            backward shooting
+
+        Returns
+        -------
+        paths.Trajectory
+            the complete trial trajectory
+        """
+        shooting_idx = input_trajectory.index(shooting_point)
+        if direction > 0:
+            joined_trajectory = (input_trajectory[:shooting_idx+1] +
+                                 partial_trial)
+        elif direction < 0:
+            joined_trajectory = (partial_trial +
+                                 input_trajectory[shooting_idx:])
+        else: # pragma: no cover
+            raise RuntimeError("Bad direction for shooting: " +
+                               str(direction))
+        return joined_trajectory
+        
+
+    def move(self, input_sample, trial_trajectory, shooting_point, accepted,
+             direction=None):
         """Fake a move.
 
         Parameters
@@ -29,12 +89,23 @@ class ShootingStub(paths.pathmover.PathMover):
             the shooting point snapshot for this trial
         accepted: bool
             whether the trial was accepted
+        direction: +1 or -1
+            direction of the shooting move (positive is forward, negative is
+            backward). Only relevant if self.pre_joined
+            is False.
         """
         initial_trajectory = input_sample.trajectory
         replica = input_sample.replica
         ensemble = input_sample.ensemble
 
-        # determine the direction
+        if not self.pre_joined:
+            trial_trajectory = self.join_one_way(initial_trajectory,
+                                                 trial_trajectory,
+                                                 shooting_point,
+                                                 direction)
+
+        # determine the direction based on trial trajectory (maybe check
+        # with given direction if given?)
         shared = trial_trajectory.shared_subtrajectory(initial_trajectory)
         if shared[0] == trial_trajectory[0]:
             choice = 0  # forward submover
