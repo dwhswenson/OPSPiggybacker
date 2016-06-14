@@ -1,6 +1,19 @@
 import openpathsampling as paths
 
 class ShootingPseudoSimulator(paths.PathSimulator):
+    """Pseudo-simulator for shooting-only mimics.
+
+    Parameters
+    ----------
+    storage : openpathsampling.netcdfplus.Storage
+        file to store OPS-ready analysis
+    initial_conditions : openpathsampling.SampleSet
+        sample set giving the OPS version of the initial conditions
+    mover : ShootingStub
+        stub to mimic the shooting mover
+    network : openpathsampling.TransitionNetwork
+        transition network with information about this system
+    """
     def __init__(self, storage, initial_conditions, mover, network):
         super(ShootingPseudoSimulator, self).__init__(storage)
         self.scheme = paths.LockedMoveScheme(mover, network)
