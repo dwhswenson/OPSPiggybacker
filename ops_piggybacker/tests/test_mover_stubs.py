@@ -16,7 +16,36 @@ class testShootingStub(object):
         self.stub = oink.ShootingStub(common.tps_ensemble)
 
     def test_join_one_way(self):
-        raise SkipTest
+        moves = common.tps_shooting_moves
+        initial = common.initial_tps_sample.trajectory
+        
+        out_1 = moves[0][1]
+        sp_1 = initial[moves[0][2]]
+        trial_1 = moves[0][4]
+        dir_1 = moves[0][5]
+        joined_1 = self.stub.join_one_way(initial, trial_1, sp_1, dir_1)
+        assert_equal(joined_1, out_1)
+
+        out_2 = moves[1][1]
+        sp_2 = joined_1[moves[1][2]]
+        trial_2 = moves[1][4]
+        dir_2 = moves[1][5]
+        joined_2 = self.stub.join_one_way(joined_1, trial_2, sp_2, dir_2)
+        assert_equal(joined_2, out_2)
+
+        out_3 = moves[2][1]
+        sp_3 = joined_2[moves[2][2]]
+        trial_3 = moves[2][4]
+        dir_3 = moves[2][5]
+        joined_3 = self.stub.join_one_way(joined_2, trial_3, sp_3, dir_3)
+        assert_equal(joined_3, out_3)
+
+        out_4 = moves[2][1]
+        sp_4 = joined_2[moves[2][2]]
+        trial_4 = moves[2][4]
+        dir_4 = moves[2][5]
+        joined_4 = self.stub.join_one_way(joined_2, trial_4, sp_4, dir_4)
+        assert_equal(joined_4, out_4)
 
     def test_backward_move(self):
         initial_sample = common.initial_tps_sample

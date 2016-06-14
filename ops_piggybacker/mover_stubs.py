@@ -39,14 +39,13 @@ class ShootingStub(paths.pathmover.PathMover):
         paths.Trajectory
             the complete trial trajectory
         """
-        initial_trajectory = input_sample.trajectory
-        shooting_idx = initial_trajectory.index(shooting_point)
+        shooting_idx = input_trajectory.index(shooting_point)
         if direction > 0:
-            joined_trajectory = (initial_trajectory[:shooting_idx+1] +
+            joined_trajectory = (input_trajectory[:shooting_idx+1] +
                                  partial_trial)
         elif direction < 0:
             joined_trajectory = (partial_trial +
-                                 initial_trajectory[shooting_idx:])
+                                 input_trajectory[shooting_idx:])
         else:
             raise RuntimeError("Bad direction for shooting: " +
                                str(direction))

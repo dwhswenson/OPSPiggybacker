@@ -28,12 +28,13 @@ def shooting_move_info():
 
     # for traj in [t0, out1, out2, out3, out4]:
         # print [s.xyz[0][0] for s in traj]
-
+    
+    # replica, full trial, shooting idx, one-way trial, direction
     moves = [
-        (0, out1, 4, True),
-        (0, out2, 2, True),
-        (0, out3, 5, False),
-        (0, out4, 4, True)
+        (0, out1, 4, True, t1, -1),
+        (0, out2, 2, True, t2, +1),
+        (0, out3, 5, False, t3, -1),
+        (0, out4, 4, True, t4, +1)
     ]
     initial_sample = paths.Sample(replica=0,
                                   trajectory=t0,
