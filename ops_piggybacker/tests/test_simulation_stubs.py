@@ -62,7 +62,7 @@ class testShootingPseudoSimulator(object):
         # use several OPS tools to analyze this file
         ## scheme.move_summary
         devnull = open(os.devnull, 'w')
-        scheme.move_summary(analysis, output=devnull) 
+        scheme.move_summary(analysis.steps, output=devnull) 
         mover_keys = [k for k in scheme._mover_acceptance.keys()
                       if k[0] == mover]
         assert_equal(len(mover_keys), 1)
@@ -97,7 +97,7 @@ class testShootingPseudoSimulator(object):
         # use several OPS tools to analyze this file
         ## scheme.move_summary
         devnull = open(os.devnull, 'w')
-        scheme.move_summary(analysis, output=devnull) 
+        scheme.move_summary(analysis.steps, output=devnull) 
         mover_keys = [k for k in scheme._mover_acceptance.keys()
                       if k[0] == mover]
         assert_equal(len(mover_keys), 1)
