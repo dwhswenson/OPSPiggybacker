@@ -70,12 +70,11 @@ class testShootingPseudoSimulator(object):
 
         ## move history tree
         import openpathsampling.visualize as ops_vis
-        history = ops_vis.ReplicaHistoryTree(
-            storage=analysis,
-            steps=analysis.steps[0:],
-            replica=0
+        history = ops_vis.PathTree(
+            analysis.steps,
+            ops_vis.ReplicaEvolution(replica=0)
         )
-        assert_equal(len(history.decorrelated_trajectories), 2)
+        assert_equal(len(history.generator.decorrelated_trajectories), 2)
 
         ## path length histogram
         path_lengths = [len(step.active[0].trajectory) 
@@ -105,12 +104,11 @@ class testShootingPseudoSimulator(object):
 
         ## move history tree
         import openpathsampling.visualize as ops_vis
-        history = ops_vis.ReplicaHistoryTree(
-            storage=analysis,
-            steps=analysis.steps[0:],
-            replica=0
+        history = ops_vis.PathTree(
+            analysis.steps,
+            ops_vis.ReplicaEvolution(replica=0)
         )
-        assert_equal(len(history.decorrelated_trajectories), 2)
+        assert_equal(len(history.generator.decorrelated_trajectories), 2)
 
         ## path length histogram
         path_lengths = [len(step.active[0].trajectory) 
