@@ -32,7 +32,3 @@ dependencies:
     - wheel
     - yaml
     - zlib
-    - pip:
-          - mdtraj
-          - ruamel-yaml-==VERSION
-          - tables
