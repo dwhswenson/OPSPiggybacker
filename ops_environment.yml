@@ -4,8 +4,6 @@ channels:
     - http://conda.anaconda.org/omnia
     - defaults
 dependencies:
-    - conda
-    - conda-env
     - hdf5
     - libgfortran
     - mkl
