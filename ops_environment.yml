@@ -11,6 +11,7 @@ dependencies:
     - numpy
     - mdtraj
     - openssl
+    - openpathsampling-dev
     - pandas
     - pip
     - pycosat
