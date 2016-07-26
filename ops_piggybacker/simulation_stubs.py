@@ -89,4 +89,4 @@ class ShootingPseudoSimulator(paths.PathSimulator):
 
             self.globalstate = new_sampleset
 
-        self.sync_storage
+        self.sync_storage()

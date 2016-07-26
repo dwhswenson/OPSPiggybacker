@@ -62,7 +62,7 @@ class testShootingPseudoSimulator(object):
         # use several OPS tools to analyze this file
         ## scheme.move_summary
         devnull = open(os.devnull, 'w')
-        scheme.move_summary(analysis, output=devnull) 
+        scheme.move_summary(analysis.steps, output=devnull) 
         mover_keys = [k for k in scheme._mover_acceptance.keys()
                       if k[0] == mover]
         assert_equal(len(mover_keys), 1)
@@ -70,12 +70,11 @@ class testShootingPseudoSimulator(object):
 
         ## move history tree
         import openpathsampling.visualize as ops_vis
-        history = ops_vis.ReplicaHistoryTree(
-            storage=analysis,
-            steps=analysis.steps[0:],
-            replica=0
+        history = ops_vis.PathTree(
+            analysis.steps,
+            ops_vis.ReplicaEvolution(replica=0)
         )
-        assert_equal(len(history.decorrelated_trajectories), 2)
+        assert_equal(len(history.generator.decorrelated_trajectories), 2)
 
         ## path length histogram
         path_lengths = [len(step.active[0].trajectory) 
@@ -97,7 +96,7 @@ class testShootingPseudoSimulator(object):
         # use several OPS tools to analyze this file
         ## scheme.move_summary
         devnull = open(os.devnull, 'w')
-        scheme.move_summary(analysis, output=devnull) 
+        scheme.move_summary(analysis.steps, output=devnull) 
         mover_keys = [k for k in scheme._mover_acceptance.keys()
                       if k[0] == mover]
         assert_equal(len(mover_keys), 1)
@@ -105,12 +104,11 @@ class testShootingPseudoSimulator(object):
 
         ## move history tree
         import openpathsampling.visualize as ops_vis
-        history = ops_vis.ReplicaHistoryTree(
-            storage=analysis,
-            steps=analysis.steps[0:],
-            replica=0
+        history = ops_vis.PathTree(
+            analysis.steps,
+            ops_vis.ReplicaEvolution(replica=0)
         )
-        assert_equal(len(history.decorrelated_trajectories), 2)
+        assert_equal(len(history.generator.decorrelated_trajectories), 2)
 
         ## path length histogram
         path_lengths = [len(step.active[0].trajectory) 
