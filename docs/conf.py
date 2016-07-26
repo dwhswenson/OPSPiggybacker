@@ -24,7 +24,7 @@ class Mock(MagicMock):
         return Mock()
 
 # TODO: un-mock OPS as soon as we have working OPS conda
-MOCK_MODULES = ['numpy', 'openpathsampling']
+MOCK_MODULES = ['numpy'] #, 'openpathsampling']
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 # If extensions (or modules to document with autodoc) are in another directory,
