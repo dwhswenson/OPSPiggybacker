@@ -11,7 +11,7 @@ dependencies:
     - mkl
     - numexpr
     - numpy
-    - omnia::mdtraj
+    - mdtraj
     - openssl
     - pandas
     - pip
