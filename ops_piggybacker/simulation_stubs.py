@@ -19,6 +19,7 @@ class ShootingPseudoSimulator(paths.PathSimulator):
         self.scheme = paths.LockedMoveScheme(mover, network)
         self.scheme.movers = {'shooting': [mover.mimic]}
         self.scheme.choice_probability = {mover.mimic: 1.0}
+        self.scheme.real_choice_probability = {mover.mimic: 1.0}
         self.mover = mover
         self.globalstate = initial_conditions
         self.initial_conditions = initial_conditions
@@ -66,7 +67,7 @@ class ShootingPseudoSimulator(paths.PathSimulator):
             subchange = self.mover.move(input_sample, trial_trajectory,
                                         shooting_point, accepted, direction)
 
-            change = paths.PathSimulatorPathMoveChange(
+            change = paths.PathSimulatorMoveChange(
                 subchange=subchange,
                 mover=self._path_sim_mover,
                 details=paths.MoveDetails(step=self.step)

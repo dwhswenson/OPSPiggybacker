@@ -132,13 +132,13 @@ class ShootingStub(paths.pathmover.PathMover):
         move_details = paths.MoveDetails()
 
         if accepted:
-            inner = paths.AcceptedSamplePathMoveChange(
+            inner = paths.AcceptedSampleMoveChange(
                 samples=trials,
                 mover=self.mimic.movers[choice],
                 details=move_details
             )
         else:
-            inner = paths.RejectedSamplePathMoveChange(
+            inner = paths.RejectedSampleMoveChange(
                 samples=trial,
                 mover=self.mimic.movers[choice],
                 details=move_details
@@ -151,7 +151,7 @@ class ShootingStub(paths.pathmover.PathMover):
         rc_details.probability = 0.5
         rc_details.weights = [1, 1]
 
-        return paths.RandomChoicePathMoveChange(
+        return paths.RandomChoiceMoveChange(
             subchange=inner,
             mover=self.mimic,
             details=rc_details
