@@ -107,6 +107,10 @@ class ShootingStub(paths.pathmover.PathMover):
         # determine the direction based on trial trajectory (maybe check
         # with given direction if given?)
         shared = trial_trajectory.shared_subtrajectory(initial_trajectory)
+        if len(shared) == 0:
+            raise RuntimeError("No shared frames. " 
+                               + "Were these shot from each other?")
+
         if shared[0] == trial_trajectory[0]:
             choice = 0  # forward submover
         elif shared[-1] == trial_trajectory[-1]:

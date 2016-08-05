@@ -19,9 +19,9 @@ class ShootingPseudoSimulator(paths.PathSimulator):
         self.scheme = paths.LockedMoveScheme(mover, network)
         self.scheme.movers = {'shooting': [mover.mimic]}
         self.scheme.choice_probability = {mover.mimic: 1.0}
-        self.scheme.real_choice_probability = {mover.mimic: 1.0}
+        self.scheme._real_choice_probability = {mover.mimic: 1.0}
         self.mover = mover
-        self.globalstate = initial_conditions
+        self.sample_set = initial_conditions
         self.initial_conditions = initial_conditions
         self.network = network
         self.root_mover = self.scheme.move_decision_tree()
@@ -60,7 +60,7 @@ class ShootingPseudoSimulator(paths.PathSimulator):
             if len(step_info) == 5:
                 direction = step_info[4]
 
-            input_sample = self.globalstate[replica]
+            input_sample = self.sample_set[replica]
             shooting_point = input_sample.trajectory[shooting_point_index]
 
 
@@ -73,11 +73,11 @@ class ShootingPseudoSimulator(paths.PathSimulator):
                 details=paths.MoveDetails(step=self.step)
             )
             samples = change.results
-            new_sampleset = self.globalstate.apply_samples(samples)
+            new_sampleset = self.sample_set.apply_samples(samples)
             mcstep = paths.MCStep(
                 simulation=self,
                 mccycle=self.step,
-                previous=self.globalstate,
+                previous=self.sample_set,
                 active=new_sampleset,
                 change=change
             )
@@ -85,9 +85,9 @@ class ShootingPseudoSimulator(paths.PathSimulator):
             if self.storage is not None:
                 self.storage.steps.save(mcstep)
             if self.step % self.save_frequency == 0:
-                self.globalstate.sanity_check()
+                self.sample_set.sanity_check()
                 self.sync_storage()
 
-            self.globalstate = new_sampleset
+            self.sample_set = new_sampleset
 
         self.sync_storage()
