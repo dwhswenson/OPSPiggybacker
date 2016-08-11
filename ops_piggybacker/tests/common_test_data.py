@@ -6,9 +6,9 @@ import os
 def xval(snap):
     return snap.coordinates[0][0]
 
-cv = paths.CV_Function("x", xval)
-left = paths.CVRangeVolume(cv, float("-inf"), 0.0).named("left")
-right = paths.CVRangeVolume(cv, 10.0, float("inf")).named("right")
+cv = paths.FunctionCV("x", xval)
+left = paths.CVDefinedVolume(cv, float("-inf"), 0.0).named("left")
+right = paths.CVDefinedVolume(cv, 10.0, float("inf")).named("right")
 
 tps_network = paths.TPSNetwork(left, right)
 tps_ensemble = tps_network.sampling_ensembles[0]

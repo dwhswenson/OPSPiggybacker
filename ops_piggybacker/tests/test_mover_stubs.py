@@ -189,3 +189,16 @@ class testShootingStub(object):
         # assertions specific to this test
         assert_equal(change.accepted, False)
         assert_equal(type(change.canonical.mover), paths.BackwardShootMover)
+
+    @raises(RuntimeError)
+    def test_no_overlap(self):
+        initial_sample = common.initial_tps_sample
+        move = common.tps_shooting_moves[-1]
+        replica = move[0]
+        trial_trajectory = move[1]
+        shooting_point = initial_sample.trajectory[move[2]]
+        accepted = True
+        direction = move[5]
+
+        change  = self.stub.move(initial_sample, trial_trajectory,
+                                 shooting_point, accepted, direction)

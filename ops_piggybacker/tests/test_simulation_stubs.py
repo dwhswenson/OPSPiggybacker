@@ -83,6 +83,16 @@ class testShootingPseudoSimulator(object):
 
     def test_run_and_analyze(self):
         moves = [tuple(move[0:4]) for move in common.tps_shooting_moves]
+
+        trajs = zip(*moves)[1]
+        init_traj = self.pseudosim.initial_conditions[0].trajectory
+        # print hex(id(init_traj)), hex(id(trajs[0]))
+        shared = init_traj.shared_subtrajectory(trajs[0])
+        # print len(shared), [s for s in shared]
+        # print len(init_traj.shared_subtrajectory(trajs[0]))
+        # print [len(trajs[i].shared_subtrajectory(trajs[i+1]))
+               # for i in range(len(trajs)-1)]
+
         self.pseudosim.run(moves)
         self.storage.close()
         # open the file for analysis, check that its content is reasonable
