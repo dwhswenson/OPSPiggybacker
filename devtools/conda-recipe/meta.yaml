@@ -16,13 +16,8 @@ requirements:
         - numpy
         - scipy
         - pandas
-        - openpathsampling-dev
-
+        - openpathsampling
 
 test:
-    requires:
-        - nose
-        - python-coveralls
-
     imports:
         - ops_piggybacker
