@@ -16,7 +16,7 @@ script:
     #- source devtools/no-ops-conda/build.sh
     # the next three are preferred if the OPS conda build is working
     - conda build devtools/conda-recipe
-    - conda install --use-local dynamiq_samplers-dev
+    - conda install --use-local ops_piggybacker-dev
     - conda install nose python-coveralls
 
     - python -c "import openpathsampling; print 'OPS version' + openpathsampling.version.full_version"
