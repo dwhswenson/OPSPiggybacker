@@ -16,8 +16,13 @@ file that can use most of OPS's standard analysis tools.
 The current version, 0.1, only aims to cover one-way shooting moves in a
 single ensemble, as with TPS simulations. See the roadmap for future plans.
 
-Documentation
--------------
+Installation
+------------
+
+TODO
+
+Overview
+--------
 
 The overall approach is very similar to the setup of an OPS simulation.
 You use the standard OPS volume, collective variable, network, and ensemble
@@ -44,7 +49,28 @@ Once this is done, you simply use the :meth:`run
 :class:`.ShootingPseudoSimulator` to generate your file. However, whereas
 the run method of the ``PathSampling`` object in OPS takes an integer with a
 number of steps, in OPSPiggybacker, you must provide the output of your
-previous simulation to the run method of the pseudo-simulator. This is in
+previous simulation to the run method of the pseudo-simulator. The following
+subsection will describe the moves.
+
+Partial input trajectories
+--------------------------
+
+
+Full input trajectories
+-----------------------
+
+One of the input options for shooting moves is to use full input
+trajectories (``pre_joined=True``). In this case, the input trajectory must
+be an OPS format trajectory for the full trial trajectory. In addition,
+*the frames which are shared with other trajectories must be identical in
+memory frames.* Since this is quite hard to do, it is usually easier to use
+the ``pre_joined=False`` version with partial input trajectories.
+
+However, we full input trajectories, you don't need to specify whether a
+given trial was forward or backward: the OPSPiggybacker can figure that out
+for you.
+
+This is in
 the format of a list of 4-tuples ``(replica, trial_trajectory,
 shooting_point_index, accepted)``, where each 4-tuple represents a trial
 move. In detail, the elements of the tuple are:

@@ -1,0 +1,34 @@
+name: root
+channels:
+    - omnia
+    - http://conda.anaconda.org/omnia
+    - defaults
+dependencies:
+    - hdf5
+    - libgfortran
+    - mkl
+    - numexpr
+    - numpy
+    - mdtraj
+    - openssl
+    - openpathsampling-dev
+    - pandas
+    - pip
+    - pycosat
+    - pycrypto
+    - pytables
+    - python
+    - python-dateutil
+    - pytz
+    - pyyaml
+    - readline
+    - requests
+    - ruamel_yaml
+    - scipy
+    - setuptools
+    - six
+    - sqlite
+    - tk
+    - wheel
+    - yaml
+    - zlib
