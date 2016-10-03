@@ -23,6 +23,7 @@ In general, we suggest the ``FW``/``BW`` pair for ``direction``, and
 
 
 import mdtraj as md
+import openpathsampling as paths
 import ops_piggybacker as oink
 from openpathsampling.engines.openmm import trajectory_from_mdtraj
 
@@ -37,11 +38,11 @@ class OneWayTPSConverter(oink.ShootingPseudoSimulator):
     trajectories are loaded via mdtraj.
 
     """
-    def __init__(self, storage, network, initial_file):
+    def __init__(self, storage, initial_file, mover, network):
         # TODO: mke the initial file into an initial trajectory
         traj = self.load_trajectory(initial_file)
         # assume we're TPS here
-        ensemble = network.ensembles[0]
+        ensemble = network.sampling_ensembles[0]
         initial_trajectories = ensemble.split(traj)
         if len(initial_trajectories) == 0:
             raise RuntimeError("Initial trajectory in " + str(initial_file)
@@ -52,11 +53,25 @@ class OneWayTPSConverter(oink.ShootingPseudoSimulator):
                                  + "subtrajectory. We use the first.")
         else:
             initial_trajectory = initial_trajectories[0]
+        initial_conditions = paths.SampleSet([
+            paths.Sample(replica=0,
+                         trajectory=initial_trajectory,
+                         ensemble=ensemble)
+        ])
+        super(OneWayTPSConverter, self).__init__(
+            storage=storage,
+            initial_conditions=initial_conditions,
+            mover=mover,
+            network=network
+        )
+            
 
     def load_trajectory(self, file_name):
-        # TODO: implement some simple toy for testing
-        return file_name
+        raise NotImplementedError(
+            "Can't instantiate abstract OneWayTPSConverter: Use a subclass"
+        )
 
+    @staticmethod
     def _get_direction(val):
         """Identifies the direction based on val"""
         is_forward = ['+1', '1', 'FW', 'F', 'FORWARD']
@@ -68,6 +83,7 @@ class OneWayTPSConverter(oink.ShootingPseudoSimulator):
         else:
             raise ValueError("Unrecognized direction: " + str(val))
 
+    @staticmethod
     def _get_accepted(val):
         is_true = ['1', 'T', 'TRUE', 'Y', 'YES']
         is_false = ['0', 'F', 'FALSE', 'N', 'NO']
@@ -124,7 +140,7 @@ class OneWayTPSConverter(oink.ShootingPseudoSimulator):
 
         # ensure the trajectory doesn't have extra frames
         if trim:
-            ensemble = self.network.ensembles[0]  # assume TPS
+            ensemble = self.network.sampling_ensembles[0]  # assume TPS
             trajectory = ensemble.split(trajectory)[0]
         
         # if reversed, make sure time is in the right direction
@@ -156,6 +172,3 @@ class GromacsOneWayTPSConverter(OneWayTPSConverter):
     def load_trajectory(self, file_name):
         """Creates an OPS trajectory from the given file"""
         return trajectory_from_mdtraj(md.load(file_name, self.topology_file))
-
-
-
