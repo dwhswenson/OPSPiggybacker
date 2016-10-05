@@ -4,6 +4,7 @@ omit =
     */site-packages/nose/*
     */openpathsampling/*
     */ops_piggybacker/tests/*
+    */mdtraj/*
 exclude_lines = 
     pragma: no cover
     pragma: no-cover
