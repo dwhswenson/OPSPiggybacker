@@ -88,8 +88,14 @@ class OneWayTPSConverter(oink.ShootingPseudoSimulator):
             network=network
         )
 
-        all_states = paths.join_volumes(self.network.initial_states 
-                                        + self.network.final_states)
+        # initial_states = self.network.initial_states
+        # final_states = self.network.final_states
+        # TODO: prefer the above, but the below work until fix for network
+        # storage
+        initial_states = [self.network.sampling_transitions[0].stateA]
+        final_states = [self.network.sampling_transitions[0].stateB]
+        all_states = paths.join_volumes(initial_states + final_states)
+
         self.fw_ensemble = paths.SequentialEnsemble([
             paths.AllOutXEnsemble(all_states),
             paths.AllInXEnsemble(all_states) & paths.LengthEnsemble(1)
