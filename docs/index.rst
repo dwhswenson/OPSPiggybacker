@@ -96,5 +96,6 @@ API Reference
 .. toctree::
    :maxdepth: 1
 
+   converters
    mover_stubs
    simulation_stubs
