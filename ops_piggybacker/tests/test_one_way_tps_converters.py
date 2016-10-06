@@ -61,11 +61,15 @@ class TestOneWayTPSConverter(object):
             os.remove(self.data_filename("extras.nc"))
 
     def test_parse_summary_line(self):
+        print "Opening file"
         summary = open(self.data_filename("summary.txt"), "r")
+        print "Making file lines"
         lines = [l for l in summary]
+        print "getting stored moves"
         moves = common.tps_shooting_moves
         
         for line, move in zip(lines, moves):
+            print "starting line"
             parsed_line = self.converter.parse_summary_line(line)
             assert_equal(parsed_line[0], move[0])  # replicas
             assert_array_almost_equal(parsed_line[1].coordinates, 
