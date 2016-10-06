@@ -61,6 +61,10 @@ class ShootingPseudoSimulator(paths.PathSimulator):
                 direction = step_info[4]
 
             input_sample = self.sample_set[replica]
+
+            if shooting_point_index < 0:
+                shooting_point_index +=len(input_sample.trajectory)
+
             shooting_point = input_sample.trajectory[shooting_point_index]
 
 

@@ -63,6 +63,7 @@ class OneWayTPSConverter(oink.ShootingPseudoSimulator):
         if options is None:
             options = TPSConverterOptions()
         self.options = options
+        self.initial_file = initial_file  # needed for restore
         traj = self.load_trajectory(initial_file)
         # assume we're TPS here
         ensemble = network.sampling_ensembles[0]
@@ -188,12 +189,12 @@ class OneWayTPSConverter(oink.ShootingPseudoSimulator):
             else:
                 trajectory = trajectory[:-1]
         
-        return (replica, trajectory, shooting_index, direction, accepted)
+        return (replica, trajectory, shooting_index, accepted, direction)
 
-    def run(self, summary_file, n_trajs_per_block=None):
+    def run(self, summary_file_name, n_trajs_per_block=None):
         # this will basically create the move_info_list for part of the
         # summary_file, and then call super's RUN
-        summary = open(summary_file, 'r')
+        summary = open(summary_file_name, 'r')
         lines = [l for l in summary]
         n_steps = len(lines)
 
@@ -202,7 +203,7 @@ class OneWayTPSConverter(oink.ShootingPseudoSimulator):
 
         line_num = 0
         while line_num < n_steps:
-            end = min(lin_num + n_trajs_per_block, n_steps)
+            end = min(line_num + n_trajs_per_block, n_steps)
             block = lines[line_num:end]
             moves = [self.parse_summary_line(l) for l in block]
             super(OneWayTPSConverter, self).run(moves)
@@ -210,10 +211,12 @@ class OneWayTPSConverter(oink.ShootingPseudoSimulator):
 
 
 class GromacsOneWayTPSConverter(OneWayTPSConverter):
-    def __init__(self, storage, network, initial_file, topology_file):
+    def __init__(self, storage, network, initial_file, topology_file,
+                 options):
         self.topology_file = topology_file
         super(GromacsOneWayTPSConverter, self).__init__(
-            storage=storage, network=network, initial_file=initial_file
+            storage=storage, network=network, initial_file=initial_file,
+            options=options
         )
 
     def load_trajectory(self, file_name):

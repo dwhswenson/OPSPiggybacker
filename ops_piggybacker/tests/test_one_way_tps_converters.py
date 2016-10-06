@@ -35,7 +35,7 @@ class TestOneWayTPSConverter(object):
         old_store = paths.Storage(data_filename("tps_setup.nc"), "r")
         self.network = old_store.networks[0]
         tps_ensemble=self.network.sampling_ensembles[0]
-        shoot = oink.ShootingStub(tps_ensemble)
+        shoot = oink.ShootingStub(tps_ensemble, pre_joined=False)
         self.converter = StupidOneWayTPSConverter(
             storage=paths.Storage(self.data_filename("output.nc"), "w"),
             initial_file="file0.data",
@@ -71,8 +71,8 @@ class TestOneWayTPSConverter(object):
             assert_array_almost_equal(parsed_line[1].coordinates, 
                                       move[4].coordinates)  # trajectories
             assert_equal(parsed_line[2], move[2])  # shooting points
-            assert_equal(parsed_line[3], move[5])  # directions
-            assert_equal(parsed_line[4], move[3])  # acceptance
+            assert_equal(parsed_line[3], move[3])  # acceptance
+            assert_equal(parsed_line[4], move[5])  # directions
 
     def test_parse_summary_line_extras(self):
         summary = open(self.data_filename("summary_extra.txt"), "r")
@@ -85,8 +85,8 @@ class TestOneWayTPSConverter(object):
             assert_array_almost_equal(parsed_line[1].coordinates, 
                                       move[4].coordinates)  # trajectories
             assert_equal(parsed_line[2], move[2])  # shooting points
-            assert_equal(parsed_line[3], move[5])  # directions
-            assert_equal(parsed_line[4], move[3])  # acceptance
+            assert_equal(parsed_line[3], move[3])  # acceptance
+            assert_equal(parsed_line[4], move[5])  # direction
 
     def test_default_options(self):
         converter = StupidOneWayTPSConverter(
@@ -100,7 +100,35 @@ class TestOneWayTPSConverter(object):
         assert_equal(converter.options.includes_shooting_point, True)
 
     def test_run(self):
-        raise SkipTest
+        self.converter.run(self.data_filename("summary.txt"))
+        self.converter.storage.close()
+        analysis = paths.AnalysisStorage(self.data_filename("output.nc"))
 
-    def test_run_without_initial(self):
-        raise SkipTest
+        # next is same as test_simulation_stubs  (move to a common test?)
+        assert_equal(len(analysis.steps), 5) # initial + 4 steps
+        scheme = analysis.schemes[0]
+        assert_equal(scheme.movers.keys(), ['shooting'])
+        assert_equal(len(scheme.movers['shooting']), 1)
+        mover = scheme.movers['shooting'][0]
+
+        # use several OPS tools to analyze this file
+        ## scheme.move_summary
+        devnull = open(os.devnull, 'w')
+        scheme.move_summary(analysis.steps, output=devnull) 
+        mover_keys = [k for k in scheme._mover_acceptance.keys()
+                      if k[0] == mover]
+        assert_equal(len(mover_keys), 1)
+        assert_equal(scheme._mover_acceptance[mover_keys[0]], [3,4])
+
+        ## move history tree
+        import openpathsampling.visualize as ops_vis
+        history = ops_vis.PathTree(
+            analysis.steps,
+            ops_vis.ReplicaEvolution(replica=0)
+        )
+        assert_equal(len(history.generator.decorrelated_trajectories), 2)
+
+        ## path length histogram
+        path_lengths = [len(step.active[0].trajectory) 
+                        for step in analysis.steps]
+        assert_equal(path_lengths, [11, 9, 7, 7, 7])

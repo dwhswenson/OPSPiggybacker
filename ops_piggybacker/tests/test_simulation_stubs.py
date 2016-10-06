@@ -95,6 +95,7 @@ class testShootingPseudoSimulator(object):
 
         self.pseudosim.run(moves)
         self.storage.close()
+
         # open the file for analysis, check that its content is reasonable
         analysis = paths.AnalysisStorage(data_filename(self.fname))
         assert_equal(len(analysis.steps), 5) # initial + 4 steps
