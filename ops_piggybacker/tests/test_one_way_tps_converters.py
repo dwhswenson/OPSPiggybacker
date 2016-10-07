@@ -29,13 +29,17 @@ class StupidOneWayTPSConverter(oink.OneWayTPSConverter):
 
 class TestOneWayTPSConverter(object):
     def setUp(self):
+        print "setting up"
         test_dir = "one_way_tps_examples"
         self.data_filename = lambda f : \
                 data_filename(os.path.join(test_dir, f))
+        print "opening old_store"
         old_store = paths.Storage(data_filename("tps_setup.nc"), "r")
+        print "loading from old_store"
         self.network = old_store.networks[0]
         tps_ensemble=self.network.sampling_ensembles[0]
         shoot = oink.ShootingStub(tps_ensemble, pre_joined=False)
+        print "making self.converter"
         self.converter = StupidOneWayTPSConverter(
             storage=paths.Storage(self.data_filename("output.nc"), "w"),
             initial_file="file0.data",
@@ -44,6 +48,7 @@ class TestOneWayTPSConverter(object):
             options=oink.TPSConverterOptions(includes_shooting_point=False,
                                              trim=False)
         )
+        print "making self.extras_converter"
         self.extras_converter = StupidOneWayTPSConverter(
             storage=paths.Storage(self.data_filename("extras.nc"), 'w'),
             initial_file="file0_extra.data",
@@ -53,8 +58,11 @@ class TestOneWayTPSConverter(object):
                                              auto_reverse=True,
                                              includes_shooting_point=True)
         )
+        old_store.close()
 
     def tearDown(self):
+        self.converter.storage.close()
+        self.extras_converter.storage.close()
         if os.path.isfile(self.data_filename("output.nc")):
             os.remove(self.data_filename("output.nc"))
         if os.path.isfile(self.data_filename("extras.nc")):
