@@ -21,6 +21,7 @@ class testShootingPseudoSimulator(object):
             ensemble=tps_ensemble
         )
         template = initial_sample.trajectory[0]
+        setup_storage.close()
 
         shoot = oink.ShootingStub(tps_ensemble)
         self.storage = paths.Storage(data_filename(self.fname), "w",
