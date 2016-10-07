@@ -43,6 +43,10 @@ class testShootingPseudoSimulator(object):
 
     
     def teardown(self):
+        try:
+            self.storage.close()
+        except RuntimeError:
+            pass
         if os.path.isfile(data_filename(self.fname)):
             os.remove(data_filename(self.fname))
 
@@ -80,6 +84,7 @@ class testShootingPseudoSimulator(object):
         path_lengths = [len(step.active[0].trajectory) 
                         for step in analysis.steps]
         assert_equal(path_lengths, [11, 9, 7, 7, 7])
+        analysis.close()
 
     def test_run_and_analyze(self):
         moves = [tuple(move[0:4]) for move in common.tps_shooting_moves]
@@ -125,3 +130,4 @@ class testShootingPseudoSimulator(object):
         path_lengths = [len(step.active[0].trajectory) 
                         for step in analysis.steps]
         assert_equal(path_lengths, [11, 9, 7, 7, 7])
+        analysis.close()

@@ -29,17 +29,13 @@ class StupidOneWayTPSConverter(oink.OneWayTPSConverter):
 
 class TestOneWayTPSConverter(object):
     def setUp(self):
-        print "setting up"
         test_dir = "one_way_tps_examples"
         self.data_filename = lambda f : \
                 data_filename(os.path.join(test_dir, f))
-        print "opening old_store"
         old_store = paths.Storage(data_filename("tps_setup.nc"), "r")
-        print "loading from old_store"
         self.network = old_store.networks[0]
         tps_ensemble=self.network.sampling_ensembles[0]
         shoot = oink.ShootingStub(tps_ensemble, pre_joined=False)
-        print "making self.converter"
         self.converter = StupidOneWayTPSConverter(
             storage=paths.Storage(self.data_filename("output.nc"), "w"),
             initial_file="file0.data",
@@ -48,7 +44,6 @@ class TestOneWayTPSConverter(object):
             options=oink.TPSConverterOptions(includes_shooting_point=False,
                                              trim=False)
         )
-        print "making self.extras_converter"
         self.extras_converter = StupidOneWayTPSConverter(
             storage=paths.Storage(self.data_filename("extras.nc"), 'w'),
             initial_file="file0_extra.data",
@@ -61,7 +56,10 @@ class TestOneWayTPSConverter(object):
         old_store.close()
 
     def tearDown(self):
-        self.converter.storage.close()
+        try:
+            self.converter.storage.close()
+        except RuntimeError:
+            pass  # test_run closes this already
         self.extras_converter.storage.close()
         if os.path.isfile(self.data_filename("output.nc")):
             os.remove(self.data_filename("output.nc"))
@@ -69,15 +67,11 @@ class TestOneWayTPSConverter(object):
             os.remove(self.data_filename("extras.nc"))
 
     def test_parse_summary_line(self):
-        print "Opening file"
         summary = open(self.data_filename("summary.txt"), "r")
-        print "Making file lines"
         lines = [l for l in summary]
-        print "getting stored moves"
         moves = common.tps_shooting_moves
         
         for line, move in zip(lines, moves):
-            print "starting line"
             parsed_line = self.converter.parse_summary_line(line)
             assert_equal(parsed_line[0], move[0])  # replicas
             assert_array_almost_equal(parsed_line[1].coordinates, 
@@ -144,3 +138,4 @@ class TestOneWayTPSConverter(object):
         path_lengths = [len(step.active[0].trajectory) 
                         for step in analysis.steps]
         assert_equal(path_lengths, [11, 9, 7, 7, 7])
+        analysis.close()
