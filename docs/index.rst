@@ -24,6 +24,27 @@ TODO
 Overview
 --------
 
+Since this combines OPS and some other sampler, you'll need a little
+familiarity with both. From the OPS side, you'll need to set up an OPS
+``TransitionNetwork`` object that represents the simulation you'll be
+reading in. (For now, this only supports ``TPSNetwork`` (and possibly
+``FixedLengthTPSNetwork``, although I haven't tested that.) This includes
+creating collective variables and volumes as always done in OPS.
+
+You'll also need to prepare you previous simulation in an input format that
+can be read by OPSPiggybacker. Currently, we only support TPS simulations
+with one-way shooting. Even within that, there are several options.
+
+* create a one-way shooting summary file
+* use the API with one-way (partial) trajectory input
+* use the API with full trajectory input
+
+In general, the summary file is probably the easiest approach for users to
+implement. The two approaches that directly use the API are 
+
+What OPSPiggybacker does
+-------------------------
+
 The overall approach is very similar to the setup of an OPS simulation.
 You use the standard OPS volume, collective variable, network, and ensemble
 objects. The only things that change are the move scheme/path movers, and

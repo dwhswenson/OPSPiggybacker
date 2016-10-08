@@ -212,13 +212,19 @@ class OneWayTPSConverter(oink.ShootingPseudoSimulator):
 
 class GromacsOneWayTPSConverter(OneWayTPSConverter):
     def __init__(self, storage, network, initial_file, topology_file,
-                 options):
+                 options=None):
         self.topology_file = topology_file
+        mover = oink.ShootingStub(ensemble=network.sampling_ensembles[0],
+                                  selector=paths.UniformSelector(),
+                                  pre_joined=False)
+
         super(GromacsOneWayTPSConverter, self).__init__(
             storage=storage, network=network, initial_file=initial_file,
-            options=options
+            mover=mover, options=options
         )
 
     def load_trajectory(self, file_name):
         """Creates an OPS trajectory from the given file"""
-        return trajectory_from_mdtraj(md.load(file_name, self.topology_file))
+        return trajectory_from_mdtraj(
+            md.load(file_name, top=self.topology_file)
+        )
