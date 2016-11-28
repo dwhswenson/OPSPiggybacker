@@ -28,8 +28,10 @@ from openpathsampling.engines.openmm import trajectory_from_mdtraj
 
 from collections import namedtuple
 
-class TPSConverterOptions(namedtuple("TPSConverterOptions", 'trim '
-                                     + 'auto_reverse includes_shooting_point')):
+_tps_converter_option_list = ('trim auto_reverse includes_shooting_point '
+                              + 'full_trajectory')
+class TPSConverterOptions(namedtuple("TPSConverterOptions", 
+                                     _tps_converter_option_list)):
     """
     trim : bool
         whether to trim the file trajectories to minimum acceptable
@@ -43,9 +45,10 @@ class TPSConverterOptions(namedtuple("TPSConverterOptions", 'trim '
     """
     __slots__ = ()
     def __new__(cls, trim=True, auto_reverse=False,
-                includes_shooting_point=True):
+                includes_shooting_point=True, full_trajectory=False):
         return super(TPSConverterOptions, cls).__new__(cls, trim, auto_reverse,
-                                                       includes_shooting_point)
+                                                       includes_shooting_point,
+                                                       full_trajectory)
 
 class OneWayTPSConverter(oink.ShootingPseudoSimulator):
     """
@@ -56,7 +59,6 @@ class OneWayTPSConverter(oink.ShootingPseudoSimulator):
     that the user must create a "simulation summary" file, which contains
     the information we need to perform the pseudo-simulation, where the
     trajectories are loaded via mdtraj.
-
     """
     def __init__(self, storage, initial_file, mover, network, options=None):
         # TODO: mke the initial file into an initial trajectory
@@ -181,6 +183,14 @@ class OneWayTPSConverter(oink.ShootingPseudoSimulator):
                 trajectory = self.fw_ensemble.split(trajectory)[0]
             elif direction < 0:
                 trajectory = self.bw_ensemble.split(trajectory)[-1]
+
+        # if this is a full trajectory, cut it down to one-way segments
+        if self.options.full_trajectory:
+            extra = 0 if self.options.includes_shooting_point else 1
+            if direction > 0:
+                trajectory = trajectory[shooting_index+extra:]
+            elif direction < 0:
+                trajectory = trajectory[:shooting_index+1-extra]
 
         # remove shooting point from trial, if necessary
         if self.options.includes_shooting_point:
