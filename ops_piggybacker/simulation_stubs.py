@@ -42,7 +42,7 @@ class ShootingPseudoSimulator(paths.PathSimulator):
         if self.step == 0:
             if self.storage is not None:
                 self.storage.save(self.scheme)
-            self.save_initial()
+            self.save_initial_step()
 
         for step_info in step_info_list:
             self.step += 1

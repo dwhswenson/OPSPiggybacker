@@ -118,7 +118,7 @@ class ShootingStub(paths.pathmover.PathMover):
         else:  # pragma: no cover
             raise RuntimeError("Are you sure this is 1-way shooting?")
 
-        trial_details = paths.SampleDetails(
+        details = paths.Details(
             initial_trajectory=initial_trajectory,
             shooting_snapshot=shooting_point
         )
@@ -128,24 +128,24 @@ class ShootingStub(paths.pathmover.PathMover):
             trajectory=trial_trajectory,
             ensemble=ensemble,
             parent=input_sample,
-            details=trial_details,
+            # details=trial_details,
             mover=self.mimic.movers[choice]
         )
 
         trials = [trial]
-        move_details = paths.MoveDetails()
+        # move_details = paths.MoveDetails()
 
         if accepted:
             inner = paths.AcceptedSampleMoveChange(
                 samples=trials,
                 mover=self.mimic.movers[choice],
-                details=move_details
+                details=details
             )
         else:
             inner = paths.RejectedSampleMoveChange(
                 samples=trial,
                 mover=self.mimic.movers[choice],
-                details=move_details
+                details=details
             )
 
         rc_details = paths.MoveDetails()
