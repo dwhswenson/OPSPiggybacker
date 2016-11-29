@@ -11,11 +11,18 @@ where ``file_name`` is the name of the file for the partial trajectory,
 ``shooting_point`` is the index of the shooting point from (from zero) in
 the *previous* trajectory, ``direction`` tells whether this was a forward
 or backward shot, and ``accepted`` tells whether the path was accepted.
+3. If the input trajectories are full trajectories instead of only the
+partial one-way trajectories for each move, then you need to provide an
+addition element on each line (after ``accepted``) for the
+``shooting_point_in_trial``, which is the index of the shooting point in the
+trial trajectory.
+
 Valid values for forward ``direction`` include ``+1``, ``1``, ``FW``,
-``forward``, with backward given by ``-1``, ``BW``, or ``backward``. Valid
-values for a trajectory that is ``accepted`` are ``T``, ``True``, ``1``,
-``Y``, and ``Yes``. If the trajectory is not accepted, use ``F``, ``False``,
-``0``, ``N``, or ``No``.
+``forward``, with backward given by ``-1``, ``BW``, or ``backward``.
+
+Valid values for a trajectory that is ``accepted`` are ``T``, ``True``,
+``1``, ``Y``, and ``Yes``. If the trajectory is not accepted, use ``F``,
+``False``, ``0``, ``N``, or ``No``.
 
 In general, we suggest the ``FW``/``BW`` pair for ``direction``, and
 ``True``/``False`` for ``accepted``. These tend to be most readable.
@@ -42,6 +49,11 @@ class TPSConverterOptions(namedtuple("TPSConverterOptions",
     includes_shooting_point : bool
         whether the one-way trial trajectory includes the shooting
         point, and therefore must have it trimmed off (default True)
+    full_trajectory : bool
+        whether the input trajectories are the full trajectories, instead of
+        the partial one-way trajectories (default False). Note that if you
+        use full_trajectory=True, you should also use trim=False; otherwise
+        these options conflict with each other.
     """
     __slots__ = ()
     def __new__(cls, trim=True, auto_reverse=False,
@@ -163,7 +175,7 @@ class OneWayTPSConverter(oink.ShootingPseudoSimulator):
             positive if forward shooting, negative if backward
         """
         splitted = line.split()
-        assert len(splitted) == 4, \
+        assert 4 <= len(splitted) <= 5, \
                 "Incorrect number of fields in input: " + line
 
         replica = 0
@@ -186,11 +198,12 @@ class OneWayTPSConverter(oink.ShootingPseudoSimulator):
 
         # if this is a full trajectory, cut it down to one-way segments
         if self.options.full_trajectory:
-            extra = 0 if self.options.includes_shooting_point else 1
+            shooting_index_in_trial = int(splitted[4])
+            shoot_pt = 0 if self.options.includes_shooting_point else 1
             if direction > 0:
-                trajectory = trajectory[shooting_index+extra:]
+                trajectory = trajectory[shooting_index_in_trial+shoot_pt:]
             elif direction < 0:
-                trajectory = trajectory[:shooting_index+1-extra]
+                trajectory = trajectory[0:shooting_index_in_trial+1-shoot_pt]
 
         # remove shooting point from trial, if necessary
         if self.options.includes_shooting_point:

@@ -53,6 +53,15 @@ class TestOneWayTPSConverter(object):
                                              auto_reverse=True,
                                              includes_shooting_point=True)
         )
+        self.full_converter = StupidOneWayTPSConverter(
+            storage=paths.Storage(self.data_filename("full.nc"), 'w'),
+            initial_file="file0.data",
+            mover=shoot,
+            network=self.network,
+            options=oink.TPSConverterOptions(trim=False,
+                                             auto_reverse=False,
+                                             full_trajectory=True)
+        )
         old_store.close()
 
     def tearDown(self):
@@ -61,10 +70,13 @@ class TestOneWayTPSConverter(object):
         except RuntimeError:
             pass  # test_run closes this already
         self.extras_converter.storage.close()
+        self.full_converter.storage.close()
         if os.path.isfile(self.data_filename("output.nc")):
             os.remove(self.data_filename("output.nc"))
         if os.path.isfile(self.data_filename("extras.nc")):
             os.remove(self.data_filename("extras.nc"))
+        if os.path.isfile(self.data_filename("full.nc")):
+            os.remove(self.data_filename("full.nc"))
 
     def test_parse_summary_line(self):
         summary = open(self.data_filename("summary.txt"), "r")
@@ -87,6 +99,20 @@ class TestOneWayTPSConverter(object):
 
         for line, move in zip(lines, moves):
             parsed_line = self.extras_converter.parse_summary_line(line)
+            assert_equal(parsed_line[0], move[0])  # replicas
+            assert_array_almost_equal(parsed_line[1].coordinates, 
+                                      move[4].coordinates)  # trajectories
+            assert_equal(parsed_line[2], move[2])  # shooting points
+            assert_equal(parsed_line[3], move[3])  # acceptance
+            assert_equal(parsed_line[4], move[5])  # direction
+
+    def test_parse_summary_line_full_trajectory(self):
+        summary = open(self.data_filename("summary_full.txt"), "r")
+        lines = [l for l in summary]
+        moves = common.tps_shooting_moves
+
+        for line, move in zip(lines, moves):
+            parsed_line = self.full_converter.parse_summary_line(line)
             assert_equal(parsed_line[0], move[0])  # replicas
             assert_array_almost_equal(parsed_line[1].coordinates, 
                                       move[4].coordinates)  # trajectories
