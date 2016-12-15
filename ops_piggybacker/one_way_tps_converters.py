@@ -58,9 +58,10 @@ class TPSConverterOptions(namedtuple("TPSConverterOptions",
     __slots__ = ()
     def __new__(cls, trim=True, auto_reverse=False,
                 includes_shooting_point=True, full_trajectory=False):
-        return super(TPSConverterOptions, cls).__new__(cls, trim, auto_reverse,
-                                                       includes_shooting_point,
-                                                       full_trajectory)
+        return super(TPSConverterOptions, cls).__new__(
+            cls, trim, auto_reverse, includes_shooting_point,
+            full_trajectory
+        )
 
 class OneWayTPSConverter(oink.ShootingPseudoSimulator):
     """
@@ -72,11 +73,15 @@ class OneWayTPSConverter(oink.ShootingPseudoSimulator):
     the information we need to perform the pseudo-simulation, where the
     trajectories are loaded via mdtraj.
     """
-    def __init__(self, storage, initial_file, mover, network, options=None):
+    def __init__(self, storage, initial_file, mover, network, options=None,
+                options_rejected=None):
         # TODO: mke the initial file into an initial trajectory
         if options is None:
             options = TPSConverterOptions()
+        if options_rejected is None:
+            options_rejected = options
         self.options = options
+        self.options_rejected = options_rejected
         self.initial_file = initial_file  # needed for restore
         traj = self.load_trajectory(initial_file)
         # assume we're TPS here
@@ -185,28 +190,33 @@ class OneWayTPSConverter(oink.ShootingPseudoSimulator):
         direction = self._get_direction(splitted[2])
         accepted = self._get_accepted(splitted[3])
 
+        if accepted:
+            options = self.options
+        else:
+            options = self.options_rejected
+
         # if reversed, make sure time is in the right direction
-        if self.options.auto_reverse and direction < 0:
+        if options.auto_reverse and direction < 0:
             trajectory = trajectory.reversed
 
         # ensure the trajectory doesn't have extra frames
-        if self.options.trim:
+        if options.trim:
             if direction > 0:
                 trajectory = self.fw_ensemble.split(trajectory)[0]
             elif direction < 0:
                 trajectory = self.bw_ensemble.split(trajectory)[-1]
 
         # if this is a full trajectory, cut it down to one-way segments
-        if self.options.full_trajectory:
+        if options.full_trajectory:
             shooting_index_in_trial = int(splitted[4])
-            shoot_pt = 0 if self.options.includes_shooting_point else 1
+            shoot_pt = 0 if options.includes_shooting_point else 1
             if direction > 0:
                 trajectory = trajectory[shooting_index_in_trial+shoot_pt:]
             elif direction < 0:
                 trajectory = trajectory[0:shooting_index_in_trial+1-shoot_pt]
 
         # remove shooting point from trial, if necessary
-        if self.options.includes_shooting_point:
+        if options.includes_shooting_point:
             if direction > 0:
                 trajectory = trajectory[1:]
             else:
@@ -235,7 +245,7 @@ class OneWayTPSConverter(oink.ShootingPseudoSimulator):
 
 class GromacsOneWayTPSConverter(OneWayTPSConverter):
     def __init__(self, storage, network, initial_file, topology_file,
-                 options=None):
+                 options=None, options_rejected=None):
         self.topology_file = topology_file
         mover = oink.ShootingStub(ensemble=network.sampling_ensembles[0],
                                   selector=paths.UniformSelector(),
@@ -243,7 +253,7 @@ class GromacsOneWayTPSConverter(OneWayTPSConverter):
 
         super(GromacsOneWayTPSConverter, self).__init__(
             storage=storage, network=network, initial_file=initial_file,
-            mover=mover, options=options
+            mover=mover, options=options, options_rejected=None
         )
 
     def load_trajectory(self, file_name):
