@@ -8,7 +8,8 @@ import os.path
 
 class StupidOneWayTPSConverter(oink.OneWayTPSConverter):
     """Test-ready subclass"""
-    def __init__(self, storage, initial_file, mover, network, options=None):
+    def __init__(self, storage, initial_file, mover, network, options=None,
+                options_rejected=None):
         self.test_dir = os.path.join(
             os.path.dirname(__file__),
             "test_data", "one_way_tps_examples"
@@ -18,7 +19,8 @@ class StupidOneWayTPSConverter(oink.OneWayTPSConverter):
             initial_file=initial_file,
             mover=mover,
             network=network,
-            options=options
+            options=options,
+            options_rejected=options_rejected
         )
 
     def load_trajectory(self, file_name):
@@ -62,6 +64,18 @@ class TestOneWayTPSConverter(object):
                                              auto_reverse=False,
                                              full_trajectory=True)
         )
+        self.options_rejected_converter = StupidOneWayTPSConverter(
+            storage=paths.Storage(self.data_filename("opt_rej.nc"), 'w'),
+            initial_file="file0.data",
+            mover=shoot,
+            network=self.network,
+            options=oink.TPSConverterOptions(trim=False,
+                                             auto_reverse=False,
+                                             full_trajectory=True),
+            options_rejected=oink.TPSConverterOptions(trim=False,
+                                                      auto_reverse=True,
+                                                      full_trajectory=False)
+        )
         old_store.close()
 
     def tearDown(self):
@@ -79,14 +93,16 @@ class TestOneWayTPSConverter(object):
             os.remove(self.data_filename("neg_sp.nc"))
         if os.path.isfile(self.data_filename("full.nc")):
             os.remove(self.data_filename("full.nc"))
+        if os.path.isfile(self.data_filename("opt_rej.nc")):
+            os.remove(self.data_filename("opt_rej.nc"))
 
-    def test_parse_summary_line(self):
-        summary = open(self.data_filename("summary.txt"), "r")
+    def _standard_summary_line_check(self, summary_file, converter):
+        summary = open(self.data_filename(summary_file), "r")
         lines = [l for l in summary]
         moves = common.tps_shooting_moves
         
         for line, move in zip(lines, moves):
-            parsed_line = self.converter.parse_summary_line(line)
+            parsed_line = converter.parse_summary_line(line)
             assert_equal(parsed_line[0], move[0])  # replicas
             assert_array_almost_equal(parsed_line[1].coordinates, 
                                       move[4].coordinates)  # trajectories
@@ -94,33 +110,30 @@ class TestOneWayTPSConverter(object):
             assert_equal(parsed_line[3], move[3])  # acceptance
             assert_equal(parsed_line[4], move[5])  # directions
 
-    def test_parse_summary_line_extras(self):
-        summary = open(self.data_filename("summary_extra.txt"), "r")
-        lines = [l for l in summary]
-        moves = common.tps_shooting_moves
 
-        for line, move in zip(lines, moves):
-            parsed_line = self.extras_converter.parse_summary_line(line)
-            assert_equal(parsed_line[0], move[0])  # replicas
-            assert_array_almost_equal(parsed_line[1].coordinates, 
-                                      move[4].coordinates)  # trajectories
-            assert_equal(parsed_line[2], move[2])  # shooting points
-            assert_equal(parsed_line[3], move[3])  # acceptance
-            assert_equal(parsed_line[4], move[5])  # direction
+    def test_parse_summary_line(self):
+        self._standard_summary_line_check(
+            summary_file="summary.txt",
+            converter=self.converter
+        )
+
+    def test_parse_summary_line_extras(self):
+        self._standard_summary_line_check(
+            summary_file="summary_extra.txt",
+            converter=self.extras_converter
+        )
 
     def test_parse_summary_line_full_trajectory(self):
-        summary = open(self.data_filename("summary_full.txt"), "r")
+        self._standard_summary_line_check(
+            summary_file="summary_full.txt",
+            converter=self.full_converter
+        )
+
+    def test_parse_summary_line_options_rejected(self):
+        summary = open(self.data_filename("summary_full_accepted.txt"), 'r')
         lines = [l for l in summary]
         moves = common.tps_shooting_moves
 
-        for line, move in zip(lines, moves):
-            parsed_line = self.full_converter.parse_summary_line(line)
-            assert_equal(parsed_line[0], move[0])  # replicas
-            assert_array_almost_equal(parsed_line[1].coordinates, 
-                                      move[4].coordinates)  # trajectories
-            assert_equal(parsed_line[2], move[2])  # shooting points
-            assert_equal(parsed_line[3], move[3])  # acceptance
-            assert_equal(parsed_line[4], move[5])  # direction
 
     def test_default_options(self):
         converter = StupidOneWayTPSConverter(
@@ -133,11 +146,7 @@ class TestOneWayTPSConverter(object):
         assert_equal(converter.options.auto_reverse, False)
         assert_equal(converter.options.includes_shooting_point, True)
 
-    def test_run(self):
-        self.converter.run(self.data_filename("summary.txt"))
-        self.converter.storage.close()
-        analysis = paths.AnalysisStorage(self.data_filename("output.nc"))
-
+    def _standard_analysis_checks(self, analysis):
         # next is same as test_simulation_stubs  (move to a common test?)
         assert_equal(len(analysis.steps), 5) # initial + 4 steps
         scheme = analysis.schemes[0]
@@ -166,6 +175,12 @@ class TestOneWayTPSConverter(object):
         path_lengths = [len(step.active[0].trajectory) 
                         for step in analysis.steps]
         assert_equal(path_lengths, [11, 9, 7, 7, 7])
+
+    def test_run(self):
+        self.converter.run(self.data_filename("summary.txt"))
+        self.converter.storage.close()
+        analysis = paths.AnalysisStorage(self.data_filename("output.nc"))
+        self._standard_analysis_checks(analysis)
         analysis.close()
 
     def test_run_with_negative_shooting_point(self):
@@ -183,35 +198,7 @@ class TestOneWayTPSConverter(object):
         converter.storage.close()
 
         analysis = paths.AnalysisStorage(self.data_filename("neg_sp.nc"))
-
-        # next is same as test_simulation_stubs  (move to a common test?)
-        assert_equal(len(analysis.steps), 5) # initial + 4 steps
-        scheme = analysis.schemes[0]
-        assert_equal(scheme.movers.keys(), ['shooting'])
-        assert_equal(len(scheme.movers['shooting']), 1)
-        mover = scheme.movers['shooting'][0]
-
-        # use several OPS tools to analyze this file
-        ## scheme.move_summary
-        devnull = open(os.devnull, 'w')
-        scheme.move_summary(analysis.steps, output=devnull) 
-        mover_keys = [k for k in scheme._mover_acceptance.keys()
-                      if k[0] == mover]
-        assert_equal(len(mover_keys), 1)
-        assert_equal(scheme._mover_acceptance[mover_keys[0]], [3,4])
-
-        ## move history tree
-        import openpathsampling.visualize as ops_vis
-        history = ops_vis.PathTree(
-            analysis.steps,
-            ops_vis.ReplicaEvolution(replica=0)
-        )
-        assert_equal(len(history.generator.decorrelated_trajectories), 2)
-
-        ## path length histogram
-        path_lengths = [len(step.active[0].trajectory) 
-                        for step in analysis.steps]
-        assert_equal(path_lengths, [11, 9, 7, 7, 7])
+        self._standard_analysis_checks(analysis)
         analysis.close()
 
 
