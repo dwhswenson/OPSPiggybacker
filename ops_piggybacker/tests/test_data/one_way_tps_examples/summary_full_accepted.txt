@@ -1,0 +1,4 @@
+file1_full.data 4 BW True 2
+file2_full.data 2 +1 1 2
+file3_rev.data 5 -1 F 0
+file4_full.data 4 backward Y 4

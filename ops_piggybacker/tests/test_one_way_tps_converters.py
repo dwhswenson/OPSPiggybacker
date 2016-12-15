@@ -130,10 +130,10 @@ class TestOneWayTPSConverter(object):
         )
 
     def test_parse_summary_line_options_rejected(self):
-        summary = open(self.data_filename("summary_full_accepted.txt"), 'r')
-        lines = [l for l in summary]
-        moves = common.tps_shooting_moves
-
+        self._standard_summary_line_check(
+            summary_file="summary_full_accepted.txt",
+            converter=self.options_rejected_converter
+        )
 
     def test_default_options(self):
         converter = StupidOneWayTPSConverter(
