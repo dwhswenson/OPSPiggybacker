@@ -66,6 +66,16 @@ class TestOneWayTPSConverter(object):
         if os.path.isfile(self.data_filename("output.nc")):
             os.remove(self.data_filename("output.nc"))
 
+    def test_initial_extra_frames_fw_bw(self):
+        converter = StupidOneWayTPSConverter(
+            storage=None,
+            initial_file="file0_extra.data",
+            mover=self.shoot,
+            network=self.network
+        )
+        assert_equal(converter.extra_bw_frames, 3)
+        assert_equal(converter.extra_fw_frames, 4)
+
     def _standard_summary_line_check(self, summary_file, converter):
         summary = open(self.data_filename(summary_file), "r")
         lines = [l for l in summary]
@@ -79,7 +89,6 @@ class TestOneWayTPSConverter(object):
             assert_equal(parsed_line[2], move[2])  # shooting points
             assert_equal(parsed_line[3], move[3])  # acceptance
             assert_equal(parsed_line[4], move[5])  # directions
-
 
     def test_parse_summary_line(self):
         self._standard_summary_line_check(
@@ -135,6 +144,40 @@ class TestOneWayTPSConverter(object):
             converter=options_rejected_converter
         )
 
+    def test_parse_summary_line_retrim_shooting_partial_accepted(self):
+        retrim_shooting_converter = StupidOneWayTPSConverter(
+            storage=None,
+            initial_file="file0_extra.data",
+            mover=self.shoot,
+            network=self.network,
+            options=oink.TPSConverterOptions(trim=True,
+                                             retrim_shooting=True,
+                                             auto_reverse=True,
+                                             includes_shooting_point=True,
+                                             full_trajectory=False)
+        )
+        self._standard_summary_line_check(
+            summary_file="summary_extra_retrim.txt",
+            converter=retrim_shooting_converter
+        )
+        raise SkipTest
+
+    def test_parse_summary_line_retrim_shooting_full_accepted(self):
+        retrim_shooting_converter = StupidOneWayTPSConverter(
+            storage=None,
+            initial_file="file0_extra.data",
+            mover=self.shoot,
+            network=self.network,
+            options=oink.TPSConverterOptions(trim=True,
+                                             retrim_shooting=True,
+                                             auto_reverse=True,
+                                             full_trajectory=True),
+            options_rejected=oink.TPSConverterOptions(trim=True,
+                                                      retrim_shooting=True,
+                                                      auto_reverse=True,
+                                                      full_trajectory=False)
+        )
+
     def test_default_options(self):
         converter = StupidOneWayTPSConverter(
             storage=None,
@@ -143,7 +186,7 @@ class TestOneWayTPSConverter(object):
             network=self.network
         )
         assert_equal(converter.options.trim, True)
-        assert_equal(converter.options.trimmed_shooting, True)
+        assert_equal(converter.options.retrim_shooting, False)
         assert_equal(converter.options.auto_reverse, False)
         assert_equal(converter.options.includes_shooting_point, True)
         assert_equal(converter.options.full_trajectory, False)
@@ -205,8 +248,12 @@ class TestOneWayTPSConverter(object):
         if os.path.isfile(self.data_filename("neg_sp.nc")):
             os.remove(self.data_filename("neg_sp.nc"))
 
+    def test_run_with_neg_sp_retrim(self):
+        raise SkipTest
+
 class TestGromacsOneWayTPSConverter(object):
     def setUp(self):
+        raise SkipTest
         from openpathsampling.engines.openmm.tools import ops_load_trajectory
         if not HAS_MDTRAJ:
             raise SkipTest
@@ -242,6 +289,11 @@ class TestGromacsOneWayTPSConverter(object):
         )
         self.converter.report_progress = sys.stdout
         self.converter.n_trajs_per_block = 1
+
+    def tearDown(self):
+        self.converter.storage.close()
+        if os.path.exists(self.data_filename("gromacs.nc")):
+            os.remove(self.data_filename("gromacs.nc"))
 
 
     def _wc_hg_TPS_network(self, topology):

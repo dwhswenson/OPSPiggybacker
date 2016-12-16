@@ -35,7 +35,7 @@ from openpathsampling.engines.openmm.tools import ops_load_trajectory
 
 from collections import namedtuple
 
-_tps_converter_option_list = ('trim trimmed_shooting auto_reverse '
+_tps_converter_option_list = ('trim retrim_shooting auto_reverse '
                               + 'includes_shooting_point full_trajectory')
 
 
@@ -47,11 +47,9 @@ class TPSConverterOptions(namedtuple("TPSConverterOptions",
     trim : bool
         whether to trim the file trajectories to minimum acceptable
         length (default True)
-    trimmed_shooting : bool
-        whether the shooting point given is based on a trimmed trajectory
-        (if the trajectory must be trimmed, but the shooting point frame
-        number is from the untrimmed trajectory, this should be False.
-        Default True)
+    retrim_shooting : bool
+        whether the shooting point index given is based on an untrimmed
+        trajectory, and therefore needs to be shifted (default False).
     auto_reverse : bool
         whether to reverse backward trajectories (if the file version is
         forward, instead of backward, default False)
@@ -66,10 +64,10 @@ class TPSConverterOptions(namedtuple("TPSConverterOptions",
     """
     __slots__ = ()
 
-    def __new__(cls, trim=True, trimmed_shooting=True, auto_reverse=False,
+    def __new__(cls, trim=True, retrim_shooting=False, auto_reverse=False,
                 includes_shooting_point=True, full_trajectory=False):
         return super(TPSConverterOptions, cls).__new__(
-            cls, trim, trimmed_shooting, auto_reverse,
+            cls, trim, retrim_shooting, auto_reverse,
             includes_shooting_point, full_trajectory
         )
 
@@ -108,11 +106,18 @@ class OneWayTPSConverter(oink.ShootingPseudoSimulator):
                                  + "subtrajectory. We use the first.")
 
         initial_trajectory = initial_trajectories[0]
+
         initial_conditions = paths.SampleSet([
             paths.Sample(replica=0,
                          trajectory=initial_trajectory,
                          ensemble=ensemble)
         ])
+
+        self.extra_bw_frames = traj.index(initial_trajectory[0])
+        final_frame_index = traj.index(initial_trajectory[-1])
+        self.extra_fw_frames = len(traj) - final_frame_index - 1
+        # extra -1 bc frame index counts from 0; len counts from 1
+
         self.summary_root_dir = None
         self.report_progress = None
         super(OneWayTPSConverter, self).__init__(
@@ -146,8 +151,6 @@ class OneWayTPSConverter(oink.ShootingPseudoSimulator):
             paths.AllOutXEnsemble(all_states)
         ])
 
-        self.extra_fw_frames = 0
-        self.extra_bw_frames = 0
 
     def load_trajectory(self, file_name):
         raise NotImplementedError(
@@ -203,6 +206,7 @@ class OneWayTPSConverter(oink.ShootingPseudoSimulator):
         direction : 1 or -1
             positive if forward shooting, negative if backward
         """
+        print line
         splitted = line.split()
         assert 4 <= len(splitted) <= 5, \
             "Incorrect number of fields in input: " + line
@@ -223,39 +227,62 @@ class OneWayTPSConverter(oink.ShootingPseudoSimulator):
         # if reversed, make sure time is in the right direction
         if options.auto_reverse and direction < 0:
             trajectory = trajectory.reversed
-        
-        if not options.trimmed_shooting:
+
+        if options.retrim_shooting:
             if shooting_index >= 0:
-                shooting_index += self.extra_bw_frames
+                shooting_index -= self.extra_bw_frames
             else:
                 shooting_index -= self.extra_fw_frames
+
+        print shooting_index
+        print len(trajectory)
 
         # if reversed, make sure time is in the right direction
         # ensure the trajectory doesn't have extra frames
         if options.trim and not options.full_trajectory:
+            print [len(t) for t in self.fw_ensemble.split(trajectory)]
+            print [len(t) for t in self.bw_ensemble.split(trajectory)]
+            print [s.xyz[0][0] for s in trajectory]
             len_pre_trim = len(trajectory)
             if direction > 0:
                 trajectory = self.fw_ensemble.split(trajectory)[0]
+                if accepted:
+                    self.extra_fw_frames = len_pre_trim - len(trajectory)
             elif direction < 0:
                 trajectory = self.bw_ensemble.split(trajectory)[-1]
                 if accepted:
                     self.extra_bw_frames = len_pre_trim - len(trajectory)
+            print [s.xyz[0][0] for s in trajectory]
+        if options.trim and options.full_trajectory:
+            raise RuntimeError("Not Implemented!")
+            pass  # TODO
+
+        print len(trajectory)
 
         # if this is a full trajectory, cut it down to one-way segments
         if options.full_trajectory:
             shooting_index_in_trial = int(splitted[4])
+            if options.retrim_shooting:
+                if shooting_index_in_trial >= 0:
+                    shooting_index_in_trial += self.extra_bw_frames
+                else:
+                    shooting_index_in_trial += self.extra_fw_frames
+
             shoot_pt = 0 if options.includes_shooting_point else 1
             if direction > 0:
                 trajectory = trajectory[shooting_index_in_trial+shoot_pt:]
             elif direction < 0:
                 trajectory = trajectory[0:shooting_index_in_trial+1-shoot_pt]
 
+        print len(trajectory)
         # remove shooting point from trial, if necessary
         if options.includes_shooting_point:
             if direction > 0:
                 trajectory = trajectory[1:]
             else:
                 trajectory = trajectory[:-1]
+
+        print len(trajectory)
 
         return (replica, trajectory, shooting_index, accepted, direction)
 
