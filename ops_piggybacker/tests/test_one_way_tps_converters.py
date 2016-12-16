@@ -160,7 +160,6 @@ class TestOneWayTPSConverter(object):
             summary_file="summary_extra_retrim.txt",
             converter=retrim_shooting_converter
         )
-        raise SkipTest
 
     def test_parse_summary_line_retrim_shooting_full_accepted(self):
         retrim_shooting_converter = StupidOneWayTPSConverter(
@@ -170,12 +169,12 @@ class TestOneWayTPSConverter(object):
             network=self.network,
             options=oink.TPSConverterOptions(trim=True,
                                              retrim_shooting=True,
-                                             auto_reverse=True,
-                                             full_trajectory=True),
-            options_rejected=oink.TPSConverterOptions(trim=True,
-                                                      retrim_shooting=True,
-                                                      auto_reverse=True,
-                                                      full_trajectory=False)
+                                             auto_reverse=False,
+                                             full_trajectory=True)
+        )
+        self._standard_summary_line_check(
+            summary_file="summary_full_retrim.txt",
+            converter=retrim_shooting_converter
         )
 
     def test_default_options(self):

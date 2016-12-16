@@ -1,4 +1,4 @@
 file1_extra.data 7 BW acc
 file2_extra.data 6 FW acc
-file3_extra.data 8 BW rej
-file4_extra.data 7 BW acc
+file3_extra.data 9 BW rej
+file4_extra.data 8 BW acc
