@@ -248,14 +248,32 @@ class TestOneWayTPSConverter(object):
             os.remove(self.data_filename("neg_sp.nc"))
 
     def test_run_with_neg_sp_retrim(self):
-        raise SkipTest
+        storage_file = self.data_filename("retrim_negsp.nc")
+        storage = paths.Storage(storage_file, 'w')
+        converter = StupidOneWayTPSConverter(
+            storage=storage,
+            initial_file="file0_extra.data",
+            mover=self.shoot,
+            network=self.network,
+            options=oink.TPSConverterOptions(trim=True,
+                                             retrim_shooting=True,
+                                             auto_reverse=False,
+                                             full_trajectory=True)
+        )
+        converter.run(self.data_filename("summary_full_retrim_negsp.txt"))
+        storage.close()
+        analysis = paths.AnalysisStorage(storage_file)
+        step4 = analysis.steps[4]
+        self._standard_analysis_checks(analysis)
+        analysis.close()
+        if os.path.isfile(storage_file):
+            os.remove(storage_file)
 
 class TestGromacsOneWayTPSConverter(object):
     def setUp(self):
-        raise SkipTest
         from openpathsampling.engines.openmm.tools import ops_load_trajectory
         if not HAS_MDTRAJ:
-            raise SkipTest
+            raise SkipTest("Missing MDTraj")
         test_dir = "gromacs_1way"
         self.data_filename = lambda f : \
                 data_filename(os.path.join(test_dir, f))
@@ -266,11 +284,13 @@ class TestGromacsOneWayTPSConverter(object):
         init_traj = ops_load_trajectory(initial_file, top=topology_file)
         self.network = self._wc_hg_TPS_network(init_traj.topology)
 
-        acc_options = oink.TPSConverterOptions(trim=False,
+        acc_options = oink.TPSConverterOptions(trim=True,
+                                               retrim_shooting=True,
                                                auto_reverse=False,
                                                includes_shooting_point=True,
                                                full_trajectory=True)
-        rej_options = oink.TPSConverterOptions(trim=False,
+        rej_options = oink.TPSConverterOptions(trim=True,
+                                               retrim_shooting=True,
                                                auto_reverse=True,
                                                includes_shooting_point=True,
                                                full_trajectory=False)
@@ -310,6 +330,10 @@ class TestGromacsOneWayTPSConverter(object):
         network = paths.TPSNetwork(state_WC, state_HG)
         return network
 
+    def test_options_setup(self):
+        assert_equal(self.converter.options.full_trajectory, True)
+        assert_equal(self.converter.options_rejected.full_trajectory, False)
+
+
     def test_run(self):
-        raise SkipTest
         self.converter.run(self.data_filename("summary.txt"))

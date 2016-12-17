@@ -1,0 +1,4 @@
+file1_full_extra.data -11 BW acc -11
+file2_full_extra.data -11 FW acc -6
+file3_full_extra.data -3 BW rej -3
+file4_full_extra.data -4 BW acc -4
