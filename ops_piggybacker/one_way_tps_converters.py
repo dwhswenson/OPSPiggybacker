@@ -148,6 +148,7 @@ class OneWayTPSConverter(oink.ShootingPseudoSimulator):
             paths.AllOutXEnsemble(all_states),
             paths.AllInXEnsemble(all_states) & paths.LengthEnsemble(1)
         ])
+        self.all_states = all_states
 
 
     def load_trajectory(self, file_name):
@@ -234,7 +235,16 @@ class OneWayTPSConverter(oink.ShootingPseudoSimulator):
         if options.trim and not options.full_trajectory:
             len_pre_trim = len(trajectory)
             if direction > 0:
-                segments = self.fw_ensemble.split(trajectory)
+                # in the forward direction, we do an extra check which can
+                # make this much faster (otherwise, this is quadratic until
+                # OPS supports some of the ideas of path ensemble theory).
+                # The BW part doesn't need this bc it will already be linear
+                # in this case.
+                # Check whether amy states are in that traj
+                if any(self.all_states(s) for s in trajectory):
+                    segments = self.fw_ensemble.split(trajectory)
+                else:
+                    segments = []
                 # If following not true, simulation failed. Perhaps max
                 # length or simulation crash? Should be fine as rejected
                 if len(segments) > 0 or accepted:
