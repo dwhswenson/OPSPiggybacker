@@ -1,5 +1,5 @@
 package:
-    name: ops_piggybacker-dev
+    name: ops_piggybacker
     version: "0.1.0"
 
 source:

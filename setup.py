@@ -11,7 +11,7 @@ import subprocess
 
 ##########################
 VERSION = "0.1.0"
-ISRELEASED = False
+ISRELEASED = True
 __version__ = VERSION
 ##########################
 
@@ -88,12 +88,12 @@ def buildKeywordDictionary():
     from distutils.core import Extension
     setupKeywords = {}
     setupKeywords["name"]              = "OPSPiggybacker"
-    setupKeywords["version"]           = "0.1.0-alpha"
+    setupKeywords["version"]           = "0.1.0"
     setupKeywords["author"]            = "David W.H. Swenson"
     setupKeywords["author_email"]      = "dwhs@hyperblazer.net"
     setupKeywords["license"]           = "LGPL 2.1 of greater"
     setupKeywords["download_url"]      = "http://github.com/dwhswenson/OPSPiggybacker"
-    setupKeywords["packages"]          = ['ops_piggybacker', 
+    setupKeywords["packages"]          = ['ops_piggybacker',
                                           'ops_piggybacker.tests']
     setupKeywords["package_dir"]       = {
         'ops_piggybacker' : 'ops_piggybacker',
@@ -111,13 +111,13 @@ def buildKeywordDictionary():
     secondTab    = 60
     for key in sorted( setupKeywords.iterkeys() ):
          value         = setupKeywords[key]
-         outputString += key.rjust(firstTab) + str( value ).rjust(secondTab) + "\n"
-    
+         outputString += (key.rjust(firstTab)
+                          + str(value).rjust(secondTab) + "\n")
+
     print("%s" % outputString)
 
-    #get_config_var(None)  # this line is necessary to fix the imports Mac OS X
     return setupKeywords
-    
+
 
 def main():
     setupKeywords = buildKeywordDictionary()
