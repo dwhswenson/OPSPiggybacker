@@ -1,0 +1,3 @@
+bw_rej.xtc 240 BW False 0  
+fw_rej.xtc 96  FW False 0
+bw_acc.xtc 90  BW True 320

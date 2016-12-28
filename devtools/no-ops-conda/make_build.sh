@@ -9,6 +9,7 @@ MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 curl ${OPS_CONDA_RECIPE}/meta.yaml | 
     grep "\ \ \ \ \-\ " | 
     sed 's/\ \ \ \ \-\ //' |
+    sed 's/\ .*//' |
     grep -v "openpathsampling" > ${MYDIR}/ops_reqs.txt
 
 cp ${MYDIR}/../conda-recipe/meta.yaml ${MYDIR}/meta.yaml

@@ -64,7 +64,8 @@ class testShootingStub(object):
         assert_equal(change.subchange.subchange, None)
         assert_equal(len(change.trials), 1)
         # assertions true for any OneWayShooting
-        details0 = change.canonical.trials[0].details
+        # details0 = change.canonical.trials[0].details
+        details0 = change.canonical.details
         assert_equal(details0.shooting_snapshot, shooting_point)
         assert_equal(details0.initial_trajectory.index(shooting_point), move[2])
         # assertions specific to this test
@@ -87,7 +88,8 @@ class testShootingStub(object):
         assert_equal(change.subchange.subchange, None)
         assert_equal(len(change.trials), 1)
         # assertions true for any OneWayShooting
-        details0 = change.canonical.trials[0].details
+        # details0 = change.canonical.trials[0].details
+        details0 = change.canonical.details
         assert_equal(details0.shooting_snapshot, shooting_point)
         assert_equal(details0.initial_trajectory.index(shooting_point), move[2])
         # assertions specific to this test
@@ -112,7 +114,8 @@ class testShootingStub(object):
         assert_equal(change.subchange.subchange, None)
         assert_equal(len(change.trials), 1)
         # assertions true for any OneWayShooting
-        details0 = change.canonical.trials[0].details
+        # details0 = change.canonical.trials[0].details
+        details0 = change.canonical.details
         assert_equal(details0.shooting_snapshot, shooting_point)
         assert_equal(details0.initial_trajectory.index(shooting_point), move[2])
         # assertions specific to this test
@@ -138,7 +141,8 @@ class testShootingStub(object):
         assert_equal(change.subchange.subchange, None)
         assert_equal(len(change.trials), 1)
         # assertions true for any OneWayShooting
-        details0 = change.canonical.trials[0].details
+        # details0 = change.canonical.trials[0].details
+        details0 = change.canonical.details
         assert_equal(details0.shooting_snapshot, shooting_point)
         assert_equal(details0.initial_trajectory.index(shooting_point), move[2])
         # assertions specific to this test
@@ -160,7 +164,8 @@ class testShootingStub(object):
         assert_equal(change.subchange.subchange, None)
         assert_equal(len(change.trials), 1)
         # assertions true for any OneWayShooting
-        details0 = change.canonical.trials[0].details
+        # details0 = change.canonical.trials[0].details
+        details0 = change.canonical.details
         assert_equal(details0.shooting_snapshot, shooting_point)
         assert_equal(details0.initial_trajectory.index(shooting_point), move[2])
         # assertions specific to this test
@@ -183,7 +188,8 @@ class testShootingStub(object):
         assert_equal(change.subchange.subchange, None)
         assert_equal(len(change.trials), 1)
         # assertions true for any OneWayShooting
-        details0 = change.canonical.trials[0].details
+        # details0 = change.canonical.trials[0].details
+        details0 = change.canonical.details
         assert_equal(details0.shooting_snapshot, shooting_point)
         assert_equal(details0.initial_trajectory.index(shooting_point), move[2])
         # assertions specific to this test

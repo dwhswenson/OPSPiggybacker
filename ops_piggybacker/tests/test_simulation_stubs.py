@@ -21,6 +21,7 @@ class testShootingPseudoSimulator(object):
             ensemble=tps_ensemble
         )
         template = initial_sample.trajectory[0]
+        setup_storage.close()
 
         shoot = oink.ShootingStub(tps_ensemble)
         self.storage = paths.Storage(data_filename(self.fname), "w",
@@ -43,6 +44,10 @@ class testShootingPseudoSimulator(object):
 
     
     def teardown(self):
+        try:
+            self.storage.close()
+        except RuntimeError:
+            pass
         if os.path.isfile(data_filename(self.fname)):
             os.remove(data_filename(self.fname))
 
@@ -80,6 +85,7 @@ class testShootingPseudoSimulator(object):
         path_lengths = [len(step.active[0].trajectory) 
                         for step in analysis.steps]
         assert_equal(path_lengths, [11, 9, 7, 7, 7])
+        analysis.close()
 
     def test_run_and_analyze(self):
         moves = [tuple(move[0:4]) for move in common.tps_shooting_moves]
@@ -95,6 +101,7 @@ class testShootingPseudoSimulator(object):
 
         self.pseudosim.run(moves)
         self.storage.close()
+
         # open the file for analysis, check that its content is reasonable
         analysis = paths.AnalysisStorage(data_filename(self.fname))
         assert_equal(len(analysis.steps), 5) # initial + 4 steps
@@ -124,3 +131,4 @@ class testShootingPseudoSimulator(object):
         path_lengths = [len(step.active[0].trajectory) 
                         for step in analysis.steps]
         assert_equal(path_lengths, [11, 9, 7, 7, 7])
+        analysis.close()

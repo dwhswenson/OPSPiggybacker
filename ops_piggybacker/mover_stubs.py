@@ -19,7 +19,7 @@ class ShootingStub(paths.pathmover.PathMover):
         whether the input trial trajectories are pre-joined into complete
         trajectories, or take partial one-way segments which should by
         dynamically joined. Currently defaults to pre_joined=True (likely to
-        change soon, though)
+        change soon, though).
 
     Attributes
     ----------
@@ -89,10 +89,11 @@ class ShootingStub(paths.pathmover.PathMover):
             the shooting point snapshot for this trial
         accepted: bool
             whether the trial was accepted
-        direction: +1 or -1
+        direction: +1, -1, or None
             direction of the shooting move (positive is forward, negative is
-            backward). Only relevant if self.pre_joined
-            is False.
+            backward). If self.pre_joined is True, the trial trajectory is
+            reconstructed from the parts. To use the exact input trial
+            trajectory with self.pre_joined == True, set direction=None
         """
         initial_trajectory = input_sample.trajectory
         replica = input_sample.replica
@@ -104,8 +105,7 @@ class ShootingStub(paths.pathmover.PathMover):
                                                  shooting_point,
                                                  direction)
 
-        # determine the direction based on trial trajectory (maybe check
-        # with given direction if given?)
+        # determine the direction based on trial trajectory
         shared = trial_trajectory.shared_subtrajectory(initial_trajectory)
         if len(shared) == 0:
             raise RuntimeError("No shared frames. " 
@@ -118,7 +118,7 @@ class ShootingStub(paths.pathmover.PathMover):
         else:  # pragma: no cover
             raise RuntimeError("Are you sure this is 1-way shooting?")
 
-        trial_details = paths.SampleDetails(
+        details = paths.Details(
             initial_trajectory=initial_trajectory,
             shooting_snapshot=shooting_point
         )
@@ -128,24 +128,24 @@ class ShootingStub(paths.pathmover.PathMover):
             trajectory=trial_trajectory,
             ensemble=ensemble,
             parent=input_sample,
-            details=trial_details,
+            # details=trial_details,
             mover=self.mimic.movers[choice]
         )
 
         trials = [trial]
-        move_details = paths.MoveDetails()
+        # move_details = paths.MoveDetails()
 
         if accepted:
             inner = paths.AcceptedSampleMoveChange(
                 samples=trials,
                 mover=self.mimic.movers[choice],
-                details=move_details
+                details=details
             )
         else:
             inner = paths.RejectedSampleMoveChange(
                 samples=trial,
                 mover=self.mimic.movers[choice],
-                details=move_details
+                details=details
             )
 
         rc_details = paths.MoveDetails()
