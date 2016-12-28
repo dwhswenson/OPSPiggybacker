@@ -40,12 +40,13 @@ development, you should use the following installation procedure:
 
 ## Roadmap
 
-Current status: `0.1.0-dev`
+Current release: `0.1.0`
 
-Planned:
+Roadmap:
 
 * `0.1`: Support for shooting moves with only one ensemble (e.g., TPS)
-* `0.2`: Support for shooting moves with multiple ensembles (e.g., TIS)
-* `0.3`: Generalize mover input to handle arbitrary moves (not just
+* Coming soon: Support for shooting moves with multiple ensembles (e.g.,
+  TIS)
+* Coming later: Generalize mover input to handle arbitrary moves (not just
   shooting)
 
