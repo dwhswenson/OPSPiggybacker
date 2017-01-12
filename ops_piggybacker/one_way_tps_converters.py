@@ -265,7 +265,7 @@ class OneWayTPSConverter(oink.ShootingPseudoSimulator):
             segments = self.full_ensemble.split(trajectory)
             shooting_index_in_trial = int(splitted[4])
             shooting_frame = trajectory[shooting_index_in_trial]
-            shooting_segments = [seg for seg in segments 
+            shooting_segments = [seg for seg in segments
                                  if shooting_frame in seg]
             if len(shooting_segments) > 1:  # pragma: no cover
                 raise RuntimeError("Your shooting point appears more"
