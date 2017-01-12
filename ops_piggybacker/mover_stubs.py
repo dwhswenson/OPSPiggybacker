@@ -5,7 +5,7 @@ class NoEngine(paths.engines.DynamicsEngine):
 
 class ShootingStub(paths.pathmover.PathMover):
     """Stub to mimic a shooting move.
-    
+
     Parameters
     ----------
     ensemble : paths.Ensemble
@@ -39,8 +39,9 @@ class ShootingStub(paths.pathmover.PathMover):
         self.pre_joined = pre_joined
         self.mimic = paths.OneWayShootingMover(ensemble, selector, engine)
 
-    def join_one_way(self, input_trajectory, partial_trial,
-                     shooting_point, direction):
+    @staticmethod
+    def join_one_way(input_trajectory, partial_trial, shooting_point,
+                     direction):
         """Create a one-way trial trajectory
 
         Parameters
@@ -73,7 +74,7 @@ class ShootingStub(paths.pathmover.PathMover):
             raise RuntimeError("Bad direction for shooting: " +
                                str(direction))
         return joined_trajectory
-        
+
 
     def move(self, input_sample, trial_trajectory, shooting_point, accepted,
              direction=None):
@@ -108,7 +109,7 @@ class ShootingStub(paths.pathmover.PathMover):
         # determine the direction based on trial trajectory
         shared = trial_trajectory.shared_subtrajectory(initial_trajectory)
         if len(shared) == 0:
-            raise RuntimeError("No shared frames. " 
+            raise RuntimeError("No shared frames. "
                                + "Were these shot from each other?")
 
         if shared[0] == trial_trajectory[0]:

@@ -2,10 +2,10 @@
 Modified from the OpenPathSampling setup.py
 """
 #from distutils.sysconfig import get_config_var
-from distutils.core import setup, Extension
+# from distutils.core import setup, Extension
 from setuptools import setup, Extension
-import numpy
-import glob
+# import numpy
+# import glob
 import os
 import subprocess
 
@@ -85,7 +85,7 @@ if not release:
 write_version_py()
 
 def buildKeywordDictionary():
-    from distutils.core import Extension
+    # from distutils.core import Extension
     setupKeywords = {}
     setupKeywords["name"]              = "OPSPiggybacker"
     setupKeywords["version"]           = "0.1.0"
