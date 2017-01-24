@@ -32,6 +32,7 @@ import os
 import openpathsampling as paths
 import ops_piggybacker as oink
 from openpathsampling.engines.openmm.tools import ops_load_trajectory
+from openpathsampling.tools import refresh_output
 
 from collections import namedtuple
 
@@ -325,9 +326,8 @@ class OneWayTPSConverter(oink.ShootingPseudoSimulator):
         line_num = 0
         while line_num < n_steps:
             if self.report_progress is not None:
-                self.report_progress.write("Working on MC step " +
-                                           str(line_num) + "\n")
-                self.report_progress.flush()
+                refresh_output("Working on MC step " + str(line_num) + "\n",
+                               output_stream=self.report_progress)
 
             end = min(line_num + n_trajs_per_block, n_steps)
             block = lines[line_num:end]
