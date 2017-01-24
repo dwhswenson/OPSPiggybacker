@@ -10,6 +10,8 @@ curl ${OPS_CONDA_RECIPE}/meta.yaml |
     grep "\ \ \ \ \-\ " | 
     sed 's/\ \ \ \ \-\ //' |
     #sed 's/\ .*//' |
+    sed 's/\(.*\)\ /\1=/' |
+    sort | uniq |
     grep -v "openpathsampling" > ${MYDIR}/ops_reqs.txt
 
 cp ${MYDIR}/../conda-recipe/meta.yaml ${MYDIR}/meta.yaml
