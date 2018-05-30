@@ -28,7 +28,7 @@ def shooting_move_info():
 
     # for traj in [t0, out1, out2, out3, out4]:
         # print [s.xyz[0][0] for s in traj]
-    
+
     # replica, full trial, shooting idx, one-way trial, direction
     moves = [
         (0, out1, 4, True, t1, -1),
@@ -57,5 +57,6 @@ if __name__ == "__main__":
     # directories to worry about here!)
     tps_storage = paths.Storage(tps_setup_filename, "w", template)
     tps_storage.save(tps_network)
+    tps_storage.save(template)
     tps_storage.sync()
     tps_storage.close()
