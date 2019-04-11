@@ -39,7 +39,7 @@ class StupidOneWayTPSConverter(oink.OneWayTPSConverter):
 
 
 class TestOneWayTPSConverter(object):
-    def setUp(self):
+    def setup(self):
         test_dir = "one_way_tps_examples"
         self.data_filename = lambda f : \
                 data_filename(os.path.join(test_dir, f))
@@ -58,7 +58,7 @@ class TestOneWayTPSConverter(object):
         )
         old_store.close()
 
-    def tearDown(self):
+    def teardown(self):
         try:
             self.converter.storage.close()
         except RuntimeError:
@@ -270,7 +270,7 @@ class TestOneWayTPSConverter(object):
             os.remove(storage_file)
 
 class TestGromacsOneWayTPSConverter(object):
-    def setUp(self):
+    def setup(self):
         from openpathsampling.engines.openmm.tools import ops_load_trajectory
         if not HAS_MDTRAJ:
             raise SkipTest("Missing MDTraj")
@@ -309,7 +309,7 @@ class TestGromacsOneWayTPSConverter(object):
         self.converter.report_progress = sys.stdout
         self.converter.n_trajs_per_block = 1
 
-    def tearDown(self):
+    def teardown(self):
         self.converter.storage.close()
         if os.path.exists(self.data_filename("gromacs.nc")):
             os.remove(self.data_filename("gromacs.nc"))

@@ -4,13 +4,13 @@ import openpathsampling as paths
 from . import common_test_data as common
 from .tools import *
 
-class testNoEngine(object):
+class TestNoEngine(object):
     def test_init(self):
         # only test that it instantiates
         oink.mover_stubs.NoEngine()
 
 
-class testShootingStub(object):
+class TestShootingStub(object):
     def setup(self):
         # this instantiates an object, and ensures that instantiation works
         self.stub = oink.ShootingStub(common.tps_ensemble)
@@ -20,7 +20,7 @@ class testShootingStub(object):
     def test_join_one_way(self):
         moves = common.tps_shooting_moves
         initial = common.initial_tps_sample.trajectory
-        
+
         out_1 = moves[0][1]
         sp_1 = initial[moves[0][2]]
         trial_1 = moves[0][4]
