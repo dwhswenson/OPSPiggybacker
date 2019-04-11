@@ -7,6 +7,9 @@ before_install:
     - conda config --set always_yes true
     - conda config --add channels conda-forge
     - conda config --add channels omnia
+    - conda create -q -y --name test conda pyyaml python=$CONDA_PY
+    - conda activate test
+    - conda config --env --add pinned_packages python=$CONDA_PY
     - conda install pip
 
 install:
