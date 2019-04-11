@@ -73,7 +73,7 @@ class ShootingPseudoSimulator(paths.PathSimulator):
             change = paths.PathSimulatorMoveChange(
                 subchange=subchange,
                 mover=self._path_sim_mover,
-                details=paths.MoveDetails(step=self.step)
+                details=paths.Details(step=self.step)
             )
             samples = change.results
             new_sampleset = self.sample_set.apply_samples(samples)
