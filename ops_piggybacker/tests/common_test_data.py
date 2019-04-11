@@ -59,5 +59,6 @@ if __name__ == "__main__":
                                 template=template)
     tps_storage.save(template)
     tps_storage.save(tps_network)
+    tps_storage.save(template)
     tps_storage.sync()
     tps_storage.close()
