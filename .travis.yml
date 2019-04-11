@@ -15,7 +15,12 @@ install:
     # the next three are preferred if the OPS conda build is working
     #- conda build devtools/conda-recipe
     #- conda install --use-local ops_piggybacker-dev
-    - curl https://raw.githubusercontent.com/openpathsampling/openpathsampling/master/devtools/conda_ops_dev_install.sh | bash
+    - conda install -y -c conda-forge -c omnia openpathsampling
+    - conda unintall -y openpathsampling
+    - pushd ~
+    - git clone https://github.com/openpathsampling/openpathsampling.git
+    - cd openpathsampling && pip install -e . && cd ..
+    - popd
     - conda install nose python-coveralls
 
 script:
