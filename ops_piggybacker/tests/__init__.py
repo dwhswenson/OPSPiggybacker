@@ -1,2 +1,2 @@
 import openpathsampling
-import tools
+import .tools
