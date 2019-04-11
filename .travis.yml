@@ -16,7 +16,7 @@ install:
     #- conda build devtools/conda-recipe
     #- conda install --use-local ops_piggybacker-dev
     - conda install -y -c conda-forge -c omnia openpathsampling
-    - conda unintall -y openpathsampling
+    - conda uninstall -y openpathsampling
     - pushd ~
     - git clone https://github.com/openpathsampling/openpathsampling.git
     - cd openpathsampling && pip install -e . && cd ..
