@@ -22,6 +22,8 @@ install:
     - git clone https://github.com/openpathsampling/openpathsampling.git
     - cd openpathsampling && pip install -e . && cd ..
     - popd
+    - which pip
+    - pip list
     - conda install nose python-coveralls
 
 script:
