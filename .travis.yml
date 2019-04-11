@@ -5,8 +5,8 @@ before_install:
     - source devtools/ci/miniconda_install.sh
     - export PYTHONUNBUFFERED=true
     - conda config --set always_yes true
-    - conda config channels --add conda-forge
-    - conda config channels --add omnia
+    - conda config --add channels conda-forge
+    - conda config --add channels omnia
 
 install:
     # the next two are if the OPS conda build isn't working
