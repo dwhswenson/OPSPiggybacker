@@ -7,6 +7,7 @@ before_install:
     - conda config --set always_yes true
     - conda config --add channels conda-forge
     - conda config --add channels omnia
+    - conda install pip
 
 install:
     # the next two are if the OPS conda build isn't working
@@ -25,7 +26,7 @@ install:
 
 script:
     - conda list
-    - python -c "import openpathsampling; print 'OPS version' + openpathsampling.version.full_version"
+    - python -c "from __future__ import print_function; import openpathsampling; print('OPS version' + openpathsampling.version.full_version)"
     - python ops_piggybacker/tests/common_test_data.py
     - nosetests -v --with-coverage
 
