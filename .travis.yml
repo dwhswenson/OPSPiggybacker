@@ -1,19 +1,17 @@
 language: python
 
-python:
-    - "2.7"
-
 install:
     - deactivate
-    - source devtools/ci/install_conda.sh
+    - source devtools/ci/miniconda_install.sh
     - export PYTHONUNBUFFERED=true
 
 script:
     - conda install --yes conda-build numpy
     - conda config --set always_yes true
+    - curl https://raw.githubusercontent.com/openpathsampling/openpathsampling/master/devtools/conda_ops_dev_install.sh | bash
     # the next two are if the OPS conda build isn't working
-    - source devtools/no-ops-conda/make_build.sh
-    - source devtools/no-ops-conda/build.sh
+    #- source devtools/no-ops-conda/make_build.sh
+    #- source devtools/no-ops-conda/build.sh
     # the next three are preferred if the OPS conda build is working
     #- conda build devtools/conda-recipe
     #- conda install --use-local ops_piggybacker-dev
@@ -28,7 +26,9 @@ after_success:
 
 env:
     matrix:
-        - python=2.7 CONDA_PY=27 CONDA_NPY=110
+        - CONDA_PY="2.7"
+        - CONDA_PY="3.6"
+        - CONDA_PY="3.7"
 # only run travis on master: either as PR (where the PR tests the merge with
 # master) or as a push (where the push is directly to master, as happens
 # when a PR is officially merged into master and pushed to GH)
