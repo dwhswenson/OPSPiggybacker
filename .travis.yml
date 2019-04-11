@@ -19,6 +19,8 @@ script:
     #- conda install --use-local ops_piggybacker-dev
     - conda install nose python-coveralls
 
+script:
+    - conda list
     - python -c "import openpathsampling; print 'OPS version' + openpathsampling.version.full_version"
     - python ops_piggybacker/tests/common_test_data.py
     - nosetests -v --with-coverage
