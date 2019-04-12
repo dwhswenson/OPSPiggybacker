@@ -27,7 +27,7 @@ install:
     - popd
     - which pip
     - pip list
-    - conda install nose python-coveralls
+    - conda install nose coveralls
 
 script:
     - conda list
