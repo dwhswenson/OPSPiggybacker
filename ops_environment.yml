@@ -1,7 +1,7 @@
 name: root
 channels:
+    - conda-forge
     - omnia
-    - http://conda.anaconda.org/omnia
     - defaults
 dependencies:
     - hdf5
@@ -11,7 +11,7 @@ dependencies:
     - numpy
     - mdtraj
     - openssl
-    - openpathsampling-dev
+    - openpathsampling
     - pandas
     - pip
     - pycosat

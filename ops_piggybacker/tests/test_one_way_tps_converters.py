@@ -39,7 +39,7 @@ class StupidOneWayTPSConverter(oink.OneWayTPSConverter):
 
 
 class TestOneWayTPSConverter(object):
-    def setUp(self):
+    def setup(self):
         test_dir = "one_way_tps_examples"
         self.data_filename = lambda f : \
                 data_filename(os.path.join(test_dir, f))
@@ -58,7 +58,7 @@ class TestOneWayTPSConverter(object):
         )
         old_store.close()
 
-    def tearDown(self):
+    def teardown(self):
         try:
             self.converter.storage.close()
         except RuntimeError:
@@ -194,7 +194,7 @@ class TestOneWayTPSConverter(object):
         # next is same as test_simulation_stubs  (move to a common test?)
         assert_equal(len(analysis.steps), 5) # initial + 4 steps
         scheme = analysis.schemes[0]
-        assert_equal(scheme.movers.keys(), ['shooting'])
+        assert_equal(list(scheme.movers.keys()), ['shooting'])
         assert_equal(len(scheme.movers['shooting']), 1)
         mover = scheme.movers['shooting'][0]
 
@@ -202,10 +202,12 @@ class TestOneWayTPSConverter(object):
         ## scheme.move_summary
         devnull = open(os.devnull, 'w')
         scheme.move_summary(analysis.steps, output=devnull)
-        mover_keys = [k for k in scheme._mover_acceptance.keys()
+        mover_keys = [k for k in scheme._mover_acceptance._trials.keys()
                       if k[0] == mover]
         assert_equal(len(mover_keys), 1)
-        assert_equal(scheme._mover_acceptance[mover_keys[0]], [3,4])
+        assert_equal(scheme._mover_acceptance._trials[mover_keys[0]], 4)
+        assert_equal(scheme._mover_acceptance._accepted[mover_keys[0]], 3)
+        # assert_equal(scheme._mover_acceptance[mover_keys[0]], [3,4])
 
         ## move history tree
         import openpathsampling.visualize as ops_vis
@@ -270,7 +272,7 @@ class TestOneWayTPSConverter(object):
             os.remove(storage_file)
 
 class TestGromacsOneWayTPSConverter(object):
-    def setUp(self):
+    def setup(self):
         from openpathsampling.engines.openmm.tools import ops_load_trajectory
         if not HAS_MDTRAJ:
             raise SkipTest("Missing MDTraj")
@@ -309,7 +311,7 @@ class TestGromacsOneWayTPSConverter(object):
         self.converter.report_progress = sys.stdout
         self.converter.n_trajs_per_block = 1
 
-    def tearDown(self):
+    def teardown(self):
         self.converter.storage.close()
         if os.path.exists(self.data_filename("gromacs.nc")):
             os.remove(self.data_filename("gromacs.nc"))

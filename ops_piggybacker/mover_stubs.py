@@ -134,7 +134,7 @@ class ShootingStub(paths.pathmover.PathMover):
         )
 
         trials = [trial]
-        # move_details = paths.MoveDetails()
+        # move_details = paths.Details()
 
         if accepted:
             inner = paths.AcceptedSampleMoveChange(
@@ -149,7 +149,7 @@ class ShootingStub(paths.pathmover.PathMover):
                 details=details
             )
 
-        rc_details = paths.MoveDetails()
+        rc_details = paths.Details()
         rc_details.inputs = []
         rc_details.choice = choice
         rc_details.chosen_mover = self.mimic.movers[choice]

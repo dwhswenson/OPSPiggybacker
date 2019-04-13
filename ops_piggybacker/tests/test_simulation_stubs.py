@@ -6,7 +6,7 @@ from . import common_test_data as common
 from .tools import *
 from openpathsampling.tests.test_helpers import make_1d_traj
 
-class testShootingPseudoSimulator(object):
+class TestShootingPseudoSimulator(object):
     fname="test_pseudo_shoot.nc"
     def setup(self):
         if os.path.isfile(data_filename(self.fname)):
@@ -16,7 +16,7 @@ class testShootingPseudoSimulator(object):
         network = setup_storage.networks[0]
         tps_ensemble = network.sampling_ensembles[0]
         initial_sample = paths.Sample(
-            replica=0, 
+            replica=0,
             trajectory=common.initial_tps_sample.trajectory,
             ensemble=tps_ensemble
         )
@@ -26,6 +26,7 @@ class testShootingPseudoSimulator(object):
         shoot = oink.ShootingStub(tps_ensemble)
         self.storage = paths.Storage(data_filename(self.fname), "w",
                                      template)
+        self.storage.save(template)
 
         self.pseudosim = oink.ShootingPseudoSimulator(
             storage=self.storage,
@@ -42,7 +43,6 @@ class testShootingPseudoSimulator(object):
             network=network
         )
 
-    
     def teardown(self):
         try:
             self.storage.close()
@@ -60,18 +60,20 @@ class testShootingPseudoSimulator(object):
         analysis = paths.AnalysisStorage(data_filename(self.fname))
         assert_equal(len(analysis.steps), 5) # initial + 4 steps
         scheme = analysis.schemes[0]
-        assert_equal(scheme.movers.keys(), ['shooting'])
+        assert_equal(list(scheme.movers.keys()), ['shooting'])
         assert_equal(len(scheme.movers['shooting']), 1)
         mover = scheme.movers['shooting'][0]
 
         # use several OPS tools to analyze this file
         ## scheme.move_summary
         devnull = open(os.devnull, 'w')
-        scheme.move_summary(analysis.steps, output=devnull) 
-        mover_keys = [k for k in scheme._mover_acceptance.keys()
+        scheme.move_summary(analysis.steps, output=devnull)
+        mover_keys = [k for k in scheme._mover_acceptance._trials.keys()
                       if k[0] == mover]
         assert_equal(len(mover_keys), 1)
-        assert_equal(scheme._mover_acceptance[mover_keys[0]], [3,4])
+        assert_equal(scheme._mover_acceptance._trials[mover_keys[0]], 4)
+        assert_equal(scheme._mover_acceptance._accepted[mover_keys[0]], 3)
+        # assert_equal(scheme._mover_acceptance[mover_keys[0]], [3,4])
 
         ## move history tree
         import openpathsampling.visualize as ops_vis
@@ -82,7 +84,7 @@ class testShootingPseudoSimulator(object):
         assert_equal(len(history.generator.decorrelated_trajectories), 2)
 
         ## path length histogram
-        path_lengths = [len(step.active[0].trajectory) 
+        path_lengths = [len(step.active[0].trajectory)
                         for step in analysis.steps]
         assert_equal(path_lengths, [11, 9, 7, 7, 7])
         analysis.close()
@@ -90,7 +92,7 @@ class testShootingPseudoSimulator(object):
     def test_run_and_analyze(self):
         moves = [tuple(move[0:4]) for move in common.tps_shooting_moves]
 
-        trajs = zip(*moves)[1]
+        trajs = list(zip(*moves))[1]
         init_traj = self.pseudosim.initial_conditions[0].trajectory
         # print hex(id(init_traj)), hex(id(trajs[0]))
         shared = init_traj.shared_subtrajectory(trajs[0])
@@ -106,18 +108,20 @@ class testShootingPseudoSimulator(object):
         analysis = paths.AnalysisStorage(data_filename(self.fname))
         assert_equal(len(analysis.steps), 5) # initial + 4 steps
         scheme = analysis.schemes[0]
-        assert_equal(scheme.movers.keys(), ['shooting'])
+        assert_equal(list(scheme.movers.keys()), ['shooting'])
         assert_equal(len(scheme.movers['shooting']), 1)
         mover = scheme.movers['shooting'][0]
 
         # use several OPS tools to analyze this file
         ## scheme.move_summary
         devnull = open(os.devnull, 'w')
-        scheme.move_summary(analysis.steps, output=devnull) 
-        mover_keys = [k for k in scheme._mover_acceptance.keys()
+        scheme.move_summary(analysis.steps, output=devnull)
+        mover_keys = [k for k in scheme._mover_acceptance._trials.keys()
                       if k[0] == mover]
         assert_equal(len(mover_keys), 1)
-        assert_equal(scheme._mover_acceptance[mover_keys[0]], [3,4])
+        assert_equal(scheme._mover_acceptance._trials[mover_keys[0]], 4)
+        assert_equal(scheme._mover_acceptance._accepted[mover_keys[0]], 3)
+        # assert_equal(scheme._mover_acceptance[mover_keys[0]], [3,4])
 
         ## move history tree
         import openpathsampling.visualize as ops_vis
