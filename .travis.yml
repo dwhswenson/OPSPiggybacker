@@ -2,8 +2,8 @@ language: python
 
 before_install:
     - deactivate
-    - source devtools/ci/miniconda_install.sh
     - export PYTHONUNBUFFERED=true
+    - source devtools/ci/miniconda_install.sh
     - conda config --set always_yes true
     - conda config --add channels omnia
     - conda config --add channels conda-forge
@@ -12,9 +12,8 @@ before_install:
     - conda config --env --add pinned_packages python=$CONDA_PY
 
 install:
-    - conda install -y -c conda-forge python=3.7 openmmtools  # DEBUG
     - curl -OLk https://raw.githubusercontent.com/openpathsampling/openpathsampling/master/devtools/conda_ops_dev_install.sh
-    - source conda_ops_dev_install.sh
+    - source conda_ops_dev_install.sh dwhswenson py37
     - conda install nose coveralls
     - pip install -e .
 
@@ -29,8 +28,8 @@ after_success:
 
 env:
     matrix:
-        #- CONDA_PY="2.7"
-        #- CONDA_PY="3.6"
+        - CONDA_PY="2.7"
+        - CONDA_PY="3.6"
         - CONDA_PY="3.7"
 # only run travis on master: either as PR (where the PR tests the merge with
 # master) or as a push (where the push is directly to master, as happens
