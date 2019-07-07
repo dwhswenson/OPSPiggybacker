@@ -13,7 +13,7 @@ before_install:
 
 install:
     - curl -OLk https://raw.githubusercontent.com/openpathsampling/openpathsampling/master/devtools/conda_ops_dev_install.sh
-    - source conda_ops_dev_install.sh dwhswenson py37
+    - source conda_ops_dev_install.sh
     - conda install nose coveralls
     - pip install -e .
 
