@@ -2,32 +2,20 @@ language: python
 
 before_install:
     - deactivate
-    - source devtools/ci/miniconda_install.sh
     - export PYTHONUNBUFFERED=true
+    - source devtools/ci/miniconda_install.sh
     - conda config --set always_yes true
-    - conda config --add channels conda-forge
     - conda config --add channels omnia
-    - conda create -q -y --name test conda pyyaml python=$CONDA_PY
+    - conda config --add channels conda-forge
+    - conda create -q -y --name test conda pyyaml pip python=$CONDA_PY
     - source activate test
     - conda config --env --add pinned_packages python=$CONDA_PY
-    - conda install pip
 
 install:
-    # the next two are if the OPS conda build isn't working
-    #- source devtools/no-ops-conda/make_build.sh
-    #- source devtools/no-ops-conda/build.sh
-    # the next three are preferred if the OPS conda build is working
-    #- conda build devtools/conda-recipe
-    #- conda install --use-local ops_piggybacker-dev
-    - conda install -y -c conda-forge -c omnia openpathsampling
-    - conda uninstall -y openpathsampling
-    - pushd ~
-    - git clone https://github.com/openpathsampling/openpathsampling.git
-    - cd openpathsampling && pip install -e . && cd ..
-    - popd
-    - which pip
-    - pip list
+    - curl -OLk https://raw.githubusercontent.com/openpathsampling/openpathsampling/master/devtools/conda_ops_dev_install.sh
+    - source conda_ops_dev_install.sh
     - conda install nose coveralls
+    - pip install -e .
 
 script:
     - conda list
